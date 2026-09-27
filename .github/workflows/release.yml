@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump Version
+        id: bump
+        run: |
+          NEW_VERSION=$(python -c '
+          import re, sys
+          content = open("pyproject.toml").read()
+          match = re.search(r"^version\s*=\s*\"([0-9]+\.[0-9]+\.[0-9]+).*?\"", content, re.MULTILINE)
+          if match:
+              version = match.group(1)
+              parts = [int(x) for x in version.split(".")]
+              parts[2] += 1
+              print(f"{parts[0]}.{parts[1]}.{parts[2]}")
+          else:
+              sys.exit(1)
+          ')
+          
+          sed -i -E "s/^version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit and Push
+        run: |
+          git add pyproject.toml
+          git commit -m "chore(release): bump version to ${{ steps.bump.outputs.new_version }} [skip ci]"
+          git push origin main
+
+      - name: Create Tag and Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.bump.outputs.new_version }}"
+          git tag $TAG
+          git push origin $TAG
+          gh release create $TAG --title "Release $TAG" --generate-notes
