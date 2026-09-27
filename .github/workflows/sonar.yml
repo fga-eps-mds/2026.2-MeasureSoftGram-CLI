@@ -26,7 +26,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           path: ${{ runner.temp }}/artifacts
 
-      - name: Extrair metadados da execucao
+      - name: Extrair metadados da execução
         id: meta
         run: |
           EVENT_NAME=$(jq -r '.event_name' "${{ runner.temp }}/artifacts/pr_metadata/metadata.json")
@@ -43,7 +43,7 @@ jobs:
           echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
           echo "base_ref=$BASE_REF" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout do codigo do commit analisado
+      - name: Checkout do código do commit analisado
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.meta.outputs.head_repo }}
@@ -51,12 +51,10 @@ jobs:
           fetch-depth: 0
           allow-unsafe-pr-checkout: true
 
-      - name: Restaurar relatorios para a raiz do workspace
+      - name: Restaurar relatórios para a raiz do workspace
         run: |
           cp "${{ runner.temp }}/artifacts/coverage.xml" ./coverage.xml 2>/dev/null || true
           cp "${{ runner.temp }}/artifacts/junit.xml" ./junit.xml 2>/dev/null || true
-          mkdir -p coverage
-          cp "${{ runner.temp }}/artifacts/coverage/lcov.info" ./coverage/lcov.info 2>/dev/null || true
 
       - name: SonarCloud Scan (Pull Request)
         if: steps.meta.outputs.event_name == 'pull_request' && steps.meta.outputs.pr_number != '' && steps.meta.outputs.pr_number != 'null'

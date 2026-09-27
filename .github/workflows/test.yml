@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,12 +32,11 @@ jobs:
       - name: Rodar testes
         run: tox
 
-      - name: Conferir relatorios de cobertura
+      - name: Corrige reports path
         run: |
-          ls -l coverage.xml junit.xml || true
-          head -5 coverage.xml || true
+          sed -i "s#<source>${GITHUB_WORKSPACE}</source>#<source>/github/workspace</source>#g" coverage.xml
 
-      - name: Gerar metadados do PR / Execucao
+      - name: Gerar metadados do PR / Execução
         run: |
           mkdir -p pr_metadata
           cat << 'EOF' > pr_metadata/metadata.json
@@ -71,7 +71,7 @@ jobs:
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
             -Dsonar.organization=fga-eps-mds-1
 
-      - name: Notificacao de SonarCloud desacoplado
+      - name: Notificação de SonarCloud desacoplado
         if: env.SONAR_TOKEN == ''
         run: |
-          echo "::notice::SONAR_TOKEN nao disponivel neste contexto (PR de fork). Testes concluidos com sucesso e artefatos salvos para a esteira do SonarCloud."
+          echo "::notice::SONAR_TOKEN não disponível neste contexto (PR de fork). Testes concluídos com sucesso e artefatos (coverage.xml e junit.xml) salvos para a esteira do SonarCloud."
