@@ -2,9 +2,9 @@ name: Rodar Testes
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   build:
@@ -30,7 +30,12 @@ jobs:
         run: pip install tox
 
       - name: Rodar testes
-        run: tox
+        run: tox -e test_cli
+
+      - name: Conferir relatorios de cobertura
+        run: |
+          ls -l coverage.xml junit.xml
+          head -5 coverage.xml
 
       - name: Corrige reports path
         run: |
@@ -66,6 +71,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
         with:
           args: >
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
