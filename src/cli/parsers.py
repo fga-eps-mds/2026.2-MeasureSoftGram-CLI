@@ -12,7 +12,6 @@ from src.cli.commands.cmd_list import command_list
 from src.cli.commands.cmd_norm_diff import command_norm_diff
 
 from src.config.settings import (
-    SUPPORTED_FORMATS,
     DEFAULT_CONFIG_PATH,
     AVAILABLE_GEN_FORMATS,
 )
@@ -221,15 +220,6 @@ def create_parser():
     )
     add_theme_argument(parser_calculate, dest="command_theme")
 
-    # parser_calculate.add_argument(
-    #     "all",
-    #     type=str,
-    #     nargs="?",
-    #     help=(
-    #         "Returns the calculated value of the entities: measures, subcharacteristics, characteristics, tsqmi"
-    #     ),
-    # )
-
     parser_calculate.add_argument(
         "-ep",
         "--extracted_path",
@@ -254,7 +244,7 @@ def create_parser():
         default="csv",
         help=(
             "The format of the output (export) values are: "
-            + ", ".join(SUPPORTED_FORMATS)
+            + ", ".join(AVAILABLE_GEN_FORMATS)
         ),
     )
     parser_calculate.set_defaults(func=command_calculate)  # function command calculate
