@@ -48,3 +48,7 @@ dev = ["pytest", "pytest-cov", "setuptools", "wheel"]
 
 [tool.setuptools.packages]
 find = {}
+
+[tool.setuptools.package-data]
+"src.cli.resources" = ["demo_data/*.json"]
+
