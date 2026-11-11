@@ -22,6 +22,7 @@ from src.cli.utils import (
     print_warn,
     is_valid_date_range,
 )
+from src.cli.resources.metrics import QUALIFIERS_KEY
 from src.cli.resources.perf_eff_parser import parse_performance_efficiency_data
 
 logger = logging.getLogger("msgram")
@@ -82,6 +83,15 @@ def extract_github(
     )
 
 
+def component_qualifiers(components):
+    """Qualifier (FIL, UTS, TRK...) de cada componente, que o parser descarta."""
+    return {
+        component["key"]: component.get("qualifier")
+        for component in components
+        if component.get("key")
+    }
+
+
 def extract_sonar(extracted_path: Path, sonar_path: Path, parser: GenericParser):
     time_init = perf_counter()
     input_origin = "sonarqube"
@@ -110,6 +120,7 @@ def extract_sonar(extracted_path: Path, sonar_path: Path, parser: GenericParser)
 
             name = get_infos_from_name(filename)
             result = parser.parse(input_value=component, type_input=input_origin)
+            result[QUALIFIERS_KEY] = component_qualifiers(component)
 
             save_file_with_results(extracted_path, filename, name, result)
 

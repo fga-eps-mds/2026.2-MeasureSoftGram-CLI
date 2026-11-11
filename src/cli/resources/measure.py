@@ -1,11 +1,19 @@
 import logging
 
+from marshmallow import ValidationError
 from resources import calculate_measures as core_calculate
+from util.exceptions import MeasureSoftGramCoreException
 from src.config.settings import SUPPORTED_MEASURES
 
 from src.cli.aggregate_metrics import measures as source_measures
 from src.cli.aggregate_metrics import metrics as source_metrics
-from src.cli.resources.metrics import get_metric_value
+from src.cli.resources.metrics import (
+    FILE_METRICS,
+    UTS_METRICS,
+    get_file_metric_values,
+    get_metric_value,
+    has_qualifiers,
+)
 from src.cli.utils import print_warn
 
 logger = logging.getLogger("msgram")
@@ -20,6 +28,35 @@ def get_configured_measures(config):
     ]
 
 
+SOURCES = (
+    ("SonarQube", source_metrics["sonar"], source_measures["sonarqube"]),
+    ("GitHub", source_metrics["github"], source_measures["github"]),
+)
+
+
+def _warn(message, warnings=None):
+    print_warn(message)
+    if warnings is not None:
+        warnings.append(message)
+
+
+def get_measures_without_source_data(json_data, config):
+    """Medidas configuradas cuja fonte não tem nenhuma métrica no arquivo.
+
+    Retorna {medida: fonte}. Essas medidas não são calculadas e também não
+    entram no aviso de métricas ausentes, que só vale quando a fonte existe.
+    """
+    extracted = get_metric_value(json_data)
+    configured_measures = get_configured_measures(config)
+    return {
+        measure_key: source_name
+        for source_name, metrics, measures in SOURCES
+        if not any(metric in extracted for metric in metrics)
+        for measure_key in measures
+        if measure_key in configured_measures
+    }
+
+
 def get_missing_measures(extracted, config, calculated_measures):
     configured_measures = get_configured_measures(config)
     supported_metrics = {
@@ -29,10 +66,7 @@ def get_missing_measures(extracted, config, calculated_measures):
     }
 
     missing_measures = {}
-    for metrics, measures in [
-        (source_metrics["sonar"], source_measures["sonarqube"]),
-        (source_metrics["github"], source_measures["github"]),
-    ]:
+    for _, metrics, measures in SOURCES:
         if not any(metric in extracted for metric in metrics):
             continue
 
@@ -78,16 +112,39 @@ def _supported_measures_for_config(config: dict) -> list[dict]:
     ]
 
 
+def is_legacy_sonar_extraction(json_data):
+    """Arquivo do SonarQube extraído antes de o msgram extract registrar o qualifier."""
+    if has_qualifiers(json_data):
+        return False
+    return any(
+        isinstance(measure, dict)
+        and measure.get("metric") in FILE_METRICS + UTS_METRICS
+        for measures in json_data.values()
+        if isinstance(measures, list)
+        for measure in measures
+    )
+
+
+def _metric_values_for_measure(json_data, extracted, metric_keys):
+    file_metric_keys = [metric for metric in metric_keys if metric in FILE_METRICS]
+    if len(file_metric_keys) < 2 or not has_qualifiers(json_data):
+        return extracted
+    return {**extracted, **get_file_metric_values(json_data, file_metric_keys)}
+
+
 def calculate_measures(
     json_data,
     config: dict = {
         "characteristics": [{"subcharacteristics": [{"measures": [{"key": ""}]}]}]
     },
+    warnings: list | None = None,
 ):
     extracted = get_metric_value(json_data)
 
     calculate_infos = []
     for measures in _supported_measures_for_config(config):
+        metric_keys = list(measures.values())[0]["metrics"]
+        metric_values = _metric_values_for_measure(json_data, extracted, metric_keys)
         calculate_infos.append(
             {
                 "key": list(measures.keys())[0],
@@ -95,12 +152,12 @@ def calculate_measures(
                     {
                         "key": metric,
                         "value": (
-                            [float(value) for value in extracted[metric]]
-                            if extracted.get(metric) and extracted[metric]
+                            [float(value) for value in metric_values[metric]]
+                            if metric_values.get(metric)
                             else None
                         ),
                     }
-                    for metric in list(measures.values())[0]["metrics"]
+                    for metric in metric_keys
                 ],
             }
         )
@@ -116,10 +173,27 @@ def calculate_measures(
     calculated_measures = [measure["key"] for measure in calculate_infos]
     missing_measures = get_missing_measures(extracted, config, calculated_measures)
     for measure_key, missing_metrics in missing_measures.items():
-        print_warn(
+        _warn(
             f"Measure '{measure_key}' could not be calculated. "
-            f"Missing metrics: {', '.join(missing_metrics)}"
+            f"Missing metrics: {', '.join(missing_metrics)}",
+            warnings,
         )
 
     headers = ["Id", "Name", "Description", "Value", "Created at"]
-    return core_calculate({"measures": calculate_infos}, config), headers
+    return _calculate_each_measure(calculate_infos, config, warnings), headers
+
+
+def _calculate_each_measure(calculate_infos, config, warnings=None):
+    """Calcula as medidas uma a uma: um erro do Core numa medida não derruba as outras."""
+    result = {"measures": []}
+    for measure in calculate_infos:
+        try:
+            calculated = core_calculate({"measures": [measure]}, config)
+        except (MeasureSoftGramCoreException, ValidationError) as error:
+            _warn(
+                f"Measure '{measure['key']}' could not be calculated: {error}",
+                warnings,
+            )
+            continue
+        result["measures"].extend(calculated["measures"])
+    return result
