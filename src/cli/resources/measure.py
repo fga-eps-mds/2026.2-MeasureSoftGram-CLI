@@ -28,6 +28,35 @@ def get_configured_measures(config):
     ]
 
 
+SOURCES = (
+    ("SonarQube", source_metrics["sonar"], source_measures["sonarqube"]),
+    ("GitHub", source_metrics["github"], source_measures["github"]),
+)
+
+
+def _warn(message, warnings=None):
+    print_warn(message)
+    if warnings is not None:
+        warnings.append(message)
+
+
+def get_measures_without_source_data(json_data, config):
+    """Medidas configuradas cuja fonte não tem nenhuma métrica no arquivo.
+
+    Retorna {medida: fonte}. Essas medidas não são calculadas e também não
+    entram no aviso de métricas ausentes, que só vale quando a fonte existe.
+    """
+    extracted = get_metric_value(json_data)
+    configured_measures = get_configured_measures(config)
+    return {
+        measure_key: source_name
+        for source_name, metrics, measures in SOURCES
+        if not any(metric in extracted for metric in metrics)
+        for measure_key in measures
+        if measure_key in configured_measures
+    }
+
+
 def get_missing_measures(extracted, config, calculated_measures):
     configured_measures = get_configured_measures(config)
     supported_metrics = {
@@ -37,10 +66,7 @@ def get_missing_measures(extracted, config, calculated_measures):
     }
 
     missing_measures = {}
-    for metrics, measures in [
-        (source_metrics["sonar"], source_measures["sonarqube"]),
-        (source_metrics["github"], source_measures["github"]),
-    ]:
+    for _, metrics, measures in SOURCES:
         if not any(metric in extracted for metric in metrics):
             continue
 
@@ -111,6 +137,7 @@ def calculate_measures(
     config: dict = {
         "characteristics": [{"subcharacteristics": [{"measures": [{"key": ""}]}]}]
     },
+    warnings: list | None = None,
 ):
     extracted = get_metric_value(json_data)
 
@@ -146,23 +173,27 @@ def calculate_measures(
     calculated_measures = [measure["key"] for measure in calculate_infos]
     missing_measures = get_missing_measures(extracted, config, calculated_measures)
     for measure_key, missing_metrics in missing_measures.items():
-        print_warn(
+        _warn(
             f"Measure '{measure_key}' could not be calculated. "
-            f"Missing metrics: {', '.join(missing_metrics)}"
+            f"Missing metrics: {', '.join(missing_metrics)}",
+            warnings,
         )
 
     headers = ["Id", "Name", "Description", "Value", "Created at"]
-    return _calculate_each_measure(calculate_infos, config), headers
+    return _calculate_each_measure(calculate_infos, config, warnings), headers
 
 
-def _calculate_each_measure(calculate_infos, config):
+def _calculate_each_measure(calculate_infos, config, warnings=None):
     """Calcula as medidas uma a uma: um erro do Core numa medida não derruba as outras."""
     result = {"measures": []}
     for measure in calculate_infos:
         try:
             calculated = core_calculate({"measures": [measure]}, config)
         except (MeasureSoftGramCoreException, ValidationError) as error:
-            print_warn(f"Measure '{measure['key']}' could not be calculated: {error}")
+            _warn(
+                f"Measure '{measure['key']}' could not be calculated: {error}",
+                warnings,
+            )
             continue
         result["measures"].extend(calculated["measures"])
     return result
