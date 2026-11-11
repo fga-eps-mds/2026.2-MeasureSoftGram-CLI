@@ -16,6 +16,7 @@ from src.cli.resources.measure import (
     is_legacy_sonar_extraction,
 )
 from src.cli.resources.tsqmi import calculate_tsqmi
+from src.cli.resources.weights import weight_sum_warnings
 from src.cli.resources.subcharacteristic import calculate_subcharacteristics
 from src.cli.utils import (
     clear_console,
@@ -133,10 +134,14 @@ def command_calculate(args):
     print_info("> Reading config file:")
 
     config = read_config_file(config_path)
+    weight_warnings = weight_sum_warnings(config)
+    for warning in weight_warnings:
+        print_warn(warning)
 
     print_info("\n> Reading extracted files:")
 
     data_calculated, success, warnings = calculate_metrics(extracted_path, config)
+    warnings = weight_warnings + warnings
 
     if success and warnings:
         print_warn(

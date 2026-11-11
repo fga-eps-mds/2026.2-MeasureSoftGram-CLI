@@ -1,4 +1,12 @@
-from src.cli.utils import clear_console, color_tag, print_error, print_info, print_rule
+from src.cli.resources.weights import weight_sum_warnings
+from src.cli.utils import (
+    clear_console,
+    color_tag,
+    print_error,
+    print_info,
+    print_rule,
+    print_warn,
+)
 
 from src.config.settings import (
     FILE_CONFIG,
@@ -126,6 +134,9 @@ def command_list(args):
     for characteristic in data.get("characteristics", []):
         output_string = print_json_tree(characteristic)
         print_info(output_string)
+
+    for warning in weight_sum_warnings(data):
+        print_warn(warning)
 
     print_info(
         "\nPara editar o arquivo de configuração utilize em seu terminal o seguinte comando:"
