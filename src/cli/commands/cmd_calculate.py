@@ -10,7 +10,7 @@ from staticfiles import DEFAULT_PRE_CONFIG as pre_config
 
 from src.cli.jsonReader import open_json_file, read_multiple_files
 from src.cli.resources.characteristic import calculate_characteristics
-from src.cli.resources.measure import calculate_measures
+from src.cli.resources.measure import calculate_measures, is_legacy_sonar_extraction
 from src.cli.resources.tsqmi import calculate_tsqmi
 from src.cli.resources.subcharacteristic import calculate_subcharacteristics
 from src.cli.utils import (
@@ -124,6 +124,11 @@ def command_calculate(args):
 
 
 def calculate_all(json_data, file_name, config):
+    if is_legacy_sonar_extraction(json_data):
+        print_warn(
+            f"{file_name} does not record the component types (FIL, UTS, TRK). "
+            "Run msgram extract again to calculate the per-file measures like the Service does."
+        )
     data_measures, _ = calculate_measures(json_data, config)
     data_subcharacteristics, _ = calculate_subcharacteristics(
         config, data_measures["measures"]
