@@ -1,0 +1,46 @@
+[
+  {
+    "characteristics": [
+      {
+        "key": "performance_efficiency",
+        "value": 0.862858
+      }
+    ],
+    "measures": [
+      {
+        "key": "response_time",
+        "value": 0.997406
+      },
+      {
+        "key": "cpu_utilization",
+        "value": 0.994211
+      },
+      {
+        "key": "memory_utilization",
+        "value": 0.0
+      }
+    ],
+    "repository": [
+      {
+        "key": "repository",
+        "value": "perf-repo"
+      }
+    ],
+    "subcharacteristics": [
+      {
+        "key": "time_behaviour",
+        "value": 0.997406
+      },
+      {
+        "key": "resource_utilization",
+        "value": 0.703014
+      }
+    ],
+    "version": [
+      {
+        "key": "version",
+        "value": "<EXTRACTION-TIME>"
+      }
+    ]
+  }
+]
