@@ -34,7 +34,7 @@ CASES = [
     ),
     pytest.param(
         ["extract", "-ep", "ep", "-p1", PERF_CSV_1], 1, "Some pe_ parameters",
-        id="extract-pe-incompleto", marks=bug("extract usa exit() sem código e termina com 0"),
+        id="extract-pe-incompleto",
     ),
     pytest.param(
         ["extract", "-ep", "ep", "-gr", "fga-eps-mds/repo"], 1, None,
@@ -50,19 +50,22 @@ CASES = [
     ),
     pytest.param(
         ["list", "-cp", "nao-existe"], 1, "O arquivo de configuração não foi encontrado",
-        id="list-sem-config", marks=bug("list usa exit() sem código e termina com 0"),
+        id="list-sem-config",
     ),
     pytest.param(
         ["diff", "-rp", UNIT_DATA / "missmatch-planned.json", "-rd", UNIT_DATA / "calculated.json"], 1,
         "The size between planned and developed release vectors is not equal", id="diff-tamanhos-diferentes",
     ),
-    pytest.param(["diff"], 1, None, id="diff-sem-argumentos", marks=bug("open_json_file(None) dá traceback")),
+    pytest.param(
+        ["diff"], 2, "the following arguments are required: -rd/--rd_path, -rp/--rp_path", id="diff-sem-argumentos",
+    ),
     pytest.param(
         ["norm_diff", "-rp", UNIT_DATA / "missmatch-planned.json", "-rd", UNIT_DATA / "calculated.json"], 1,
         "Planned and calculated files have different characteristics", id="norm-diff-chaves-diferentes",
     ),
     pytest.param(
-        ["norm_diff"], 1, None, id="norm-diff-sem-argumentos", marks=bug("open_json_file(None) dá traceback"),
+        ["norm_diff"], 2, "the following arguments are required: -rp/--rp_path, -rd/--rd_path",
+        id="norm-diff-sem-argumentos",
     ),
 ]
 
