@@ -3,17 +3,17 @@
     "characteristics": [
       {
         "key": "performance_efficiency",
-        "value": 0.862858
+        "value": 0.86
       }
     ],
     "measures": [
       {
         "key": "response_time",
-        "value": 0.997406
+        "value": 1.0
       },
       {
         "key": "cpu_utilization",
-        "value": 0.994211
+        "value": 0.99
       },
       {
         "key": "memory_utilization",
@@ -29,11 +29,11 @@
     "subcharacteristics": [
       {
         "key": "time_behaviour",
-        "value": 0.997406
+        "value": 1.0
       },
       {
         "key": "resource_utilization",
-        "value": 0.703014
+        "value": 0.7
       }
     ],
     "version": [

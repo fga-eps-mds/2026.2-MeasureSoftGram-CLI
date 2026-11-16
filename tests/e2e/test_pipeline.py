@@ -119,7 +119,9 @@ def test_performance_efficiency_extract_and_calculate(msgram, tmp_path, json_sna
     assert extract.returncode == 0, extract.stdout
     assert len(list(cfg.glob("perf-eff_perf-repo-*-extracted.metrics"))) == 1
     assert calculate.returncode == 0, calculate.stdout
-    calculated = read_calc_json(cfg)
+    # O perf-eff do msgram-core usa RandomForest do scikit-learn (versão não fixada): a 4ª casa muda entre versões
+    # (1.7 na CI com Python 3.10, 1.9 no 3.11). Duas casas pegam mudança de modelo sem depender do sklearn.
+    calculated = rounded(json.loads((cfg / "calc_msgram.json").read_text()), digits=2)
     # a versão do perf-eff é a hora da extração (datetime.now no nome do arquivo)
     assert re.fullmatch(r"\d{2}-\d{2}-\d{4}-\d{2}-\d{2}", calculated[0]["version"][0]["value"])
     calculated[0]["version"][0]["value"] = "<EXTRACTION-TIME>"
