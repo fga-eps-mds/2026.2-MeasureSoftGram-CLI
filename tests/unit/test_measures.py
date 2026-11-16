@@ -51,6 +51,25 @@ def test_calculate_technical_debt_ratio():
     assert pytest.approx(measure_result[0].get("value")) == 0.59625
 
 
+# O msgram-parser entrega os valores como número: 0.0 não pode sumir e 12.0
+# não pode ser percorrido como texto.
+@pytest.mark.parametrize("test_failures,expected", [(0.0, 1.0), (12.0, 0.2)])
+def test_calculate_passed_tests_with_numeric_single_values(test_failures, expected):
+    json_data = {
+        "fga-eps-mds_repo": [
+            {"metric": "test_failures", "value": test_failures},
+            {"metric": "test_errors", "value": 0.0},
+        ],
+        "tests/test_a.py": [{"metric": "tests", "value": 10.0}],
+        "tests/test_b.py": [{"metric": "tests", "value": 5.0}],
+    }
+
+    infos, _ = calculate_measures(json_data, pre_config)
+
+    measures = {m["key"]: m["value"] for m in infos.get("measures")}
+    assert pytest.approx(measures["passed_tests"]) == expected
+
+
 @patch("src.cli.resources.measure.print_warn")
 def test_calculate_measures_warns_missing_metric(mock_print_warn):
     json_data = open_json_file(
