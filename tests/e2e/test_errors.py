@@ -37,8 +37,8 @@ CASES = [
         id="extract-pe-incompleto",
     ),
     pytest.param(
-        ["extract", "-ep", "ep", "-gr", "fga-eps-mds/repo"], 1, None,
-        id="extract-gr-sem-rede", marks=bug("msgram-parser 1.2.2 dá UnboundLocalError quando a rede falha"),
+        ["extract", "-ep", "ep", "-gr", "fga-eps-mds/repo"], 1, "could not reach the GitHub API",
+        id="extract-gr-sem-rede",
     ),
     pytest.param(
         ["calculate", "-ep", "ep", "-cp", "nao-existe"], 1, "Error reading msgram.json", id="calculate-sem-config",
