@@ -11,7 +11,13 @@ import sys
 import tempfile
 from pathlib import Path
 
-from core.ahp import CR_THRESHOLD, SAATY_PHRASES, calculate_group, pairs
+from core.ahp import (
+    CR_THRESHOLD,
+    SAATY_PHRASES,
+    calculate_group,
+    most_inconsistent,
+    pairs,
+)
 from rich.prompt import Prompt
 from rich.text import Text
 
@@ -84,6 +90,13 @@ def describe_answer(answer) -> str:
     return f"{a} × {b}: {preferred} é {SAATY_PHRASES[intensity]}"
 
 
+def describe_suggestion(answer) -> str:
+    _, _, preferred, intensity = answer
+    if preferred is None:
+        return "igualmente importantes"
+    return f"{preferred} é {SAATY_PHRASES[intensity]}"
+
+
 def describe_cr(result) -> str:
     if result.consistency_ratio is None:
         return "CR não se aplica"
@@ -130,7 +143,13 @@ def ask_group(group, title: str):
             "warning",
         )
         print_output("    Suas respostas se contradizem.", "warning")
-        # TODO(passo 4): apontar a comparação mais distante da consistência (Saaty 2003)
+        conflict = most_inconsistent(group.entities, answers, result)
+        if conflict:
+            print_output(
+                f"    Conflito mais provável: {conflict.a} × {conflict.b}. "
+                f"Sugestão: {describe_suggestion(conflict.suggested)}",
+                "warning",
+            )
         if (
             ask_choice("    [1] refazer o grupo  [2] aceitar mesmo assim", ["1", "2"])
             == "2"

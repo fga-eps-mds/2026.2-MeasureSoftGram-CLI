@@ -235,3 +235,32 @@ def test_subcomando_weights_no_parser():
     args = create_parser().parse_args(["weights", "--group", "characteristics"])
     assert args.func is command_weights
     assert args.group == "characteristics"
+
+
+# ---------------------------------------------------------------- diagnóstico do conflito
+
+# modifiability: non_complex (A), commented (B), duplication (C), technical_debt (D)
+# A > B, A > C, D > A (contradiz), B > C, B > D, C > D
+G4_COM_CONFLITO = ["1", "1", "1", "2", "2", "1", "1", "1", "1", "2", "1", "1"]
+
+
+def test_aviso_aponta_a_comparacao_em_conflito(project, monkeypatch, capsys):
+    answer(monkeypatch, G1 + G2 + G3_OK + G4_COM_CONFLITO + ["2", "n"])
+
+    command_weights({"config_path": project, "group": None})
+
+    out = capsys.readouterr().out
+    assert (
+        "Conflito mais provável: non_complex_file_density × technical_debt_ratio. "
+        "Sugestão: igualmente importantes"
+    ) in out
+
+
+def test_aviso_nao_aponta_conflito_no_caso_circular(project, monkeypatch, capsys):
+    answer(monkeypatch, G1 + G2 + G3_CIRCULAR + ["2"] + G4_IGUAL + ["n"])
+
+    command_weights({"config_path": project, "group": None})
+
+    out = capsys.readouterr().out
+    assert "CR = 4,95 (acima de 0,10)" in out
+    assert "Conflito mais provável" not in out
