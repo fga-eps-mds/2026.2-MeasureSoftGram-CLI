@@ -37,7 +37,10 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar ferramentas de build
-        run: python -m pip install --upgrade pip build packaging twine
+        run: python -m pip install --upgrade pip build packaging twine babel
+
+      - name: Compilar traduções
+        run: pybabel compile -D msgram -d src/cli/locale
 
       - name: Validar tag == versao do pyproject e detectar pre-release
         id: meta

@@ -55,3 +55,6 @@ setup.py
 
 # ctags
 tags
+
+# Compiled gettext catalogs
+*.mo
