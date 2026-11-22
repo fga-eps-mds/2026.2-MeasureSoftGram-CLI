@@ -21,6 +21,7 @@ from core.ahp import (
 from rich.prompt import Prompt
 from rich.text import Text
 
+from src.cli.i18n import _
 from src.cli.resources.weight_groups import (
     InvalidGroupPath,
     apply_weights,
@@ -159,7 +160,7 @@ def ask_group(group, title: str):
 
 def print_summary(entries, partial: bool):
     console.line()
-    print_rule("Resumo")
+    print_rule(_("Resumo"))
     for group, answers, result in entries:
         print_output(f"{group.label} ({describe_cr(result)})", "accent")
         for answer in answers:
@@ -171,7 +172,7 @@ def print_summary(entries, partial: bool):
             print_output(f"  {entity:<30} {before:>3} → {result.weights[entity]}")
         console.line()
     if partial:
-        print_info("Os demais grupos não foram alterados.")
+        print_info(_("Os demais grupos não foram alterados."))
 
 
 # ------------------------------------------------------------------ arquivo
@@ -203,13 +204,21 @@ def display_path(file_path: Path) -> str:
 def load_config(file_path: Path, shown_path: str) -> dict:
     """Lê o msgram.json ou encerra com a orientação do Cenário 6."""
     if not file_path.exists():
-        print_error(f"Nenhum arquivo de configuração encontrado em {shown_path}")
-        print_output("  Execute o comando msgram init")
+        print_error(
+            _("Nenhum arquivo de configuração encontrado em {path}").format(
+                path=shown_path
+            )
+        )
+        print_output(_("  Execute o comando msgram init"))
         sys.exit(1)
     try:
         return json.loads(file_path.read_text())
     except json.JSONDecodeError as e:
-        print_error(f"O arquivo {shown_path} não é um JSON válido: {e}")
+        print_error(
+            _("O arquivo {path} não é um JSON válido: {error}").format(
+                path=shown_path, error=e
+            )
+        )
         sys.exit(1)
 
 
@@ -221,8 +230,8 @@ def select_groups(config: dict, group_path):
     try:
         return [find_group(groups, group_path)]
     except InvalidGroupPath as e:
-        print_error(f"Grupo inexistente: {e.path}")
-        print_output("  Caminhos válidos:")
+        print_error(_("Grupo inexistente: {path}").format(path=e.path))
+        print_output(_("  Caminhos válidos:"))
         for path in e.valid_paths:
             print_output(f"    {path}")
         sys.exit(1)
@@ -272,7 +281,7 @@ def command_weights(args):
     changed = [(g, a, r) for g, a, r in entries if a or g.weights != r.weights]
     if not changed:
         console.line()
-        print_info("Nenhum peso a alterar.")
+        print_info(_("Nenhum peso a alterar."))
         return
 
     print_summary(changed, partial=bool(group_path))

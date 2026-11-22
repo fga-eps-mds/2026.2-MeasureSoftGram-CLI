@@ -9,6 +9,7 @@ from anytree import Node, RenderTree
 
 from staticfiles import DEFAULT_PRE_CONFIG as pre_config
 
+from src.cli.i18n import _
 from src.cli.jsonReader import open_json_file, read_multiple_files
 from src.cli.resources.characteristic import calculate_characteristics
 from src.cli.resources.measure import calculate_measures
@@ -42,7 +43,11 @@ def read_config_file(config_path):
     try:
         return open_json_file(config_path / FILE_CONFIG)
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error reading msgram.json config file in {config_path}: {e}\n")
+        print_error(
+            _("Error reading msgram.json config file in {path}: {error}\n").format(
+                path=config_path, error=e
+            )
+        )
         print_rule()
         exit(1)
 
@@ -57,11 +62,15 @@ def calculate_metrics(extracted_path, config):
     if not extracted_path.is_file():
         files = list(extracted_path.glob("*.metrics"))
         if not files:
-            print_warn(f"No metrics files found in {extracted_path}")
+            print_warn(
+                _("No metrics files found in {path}").format(path=extracted_path)
+            )
             return data_calculated, False
 
         with make_progress_bar() as progress_bar:
-            task_calc = progress_bar.add_task("Calculating metrics: ", total=len(files))
+            task_calc = progress_bar.add_task(
+                _("Calculating metrics: "), total=len(files)
+            )
             for file, file_name in read_multiple_files(extracted_path, "metrics"):
                 if file_name.startswith("perf-eff_"):
                     file_name = file_name[len("perf-eff_") :]
@@ -84,7 +93,11 @@ def calculate_metrics(extracted_path, config):
             data_calculated.append(result)
             return data_calculated, True
         except exceptions.MeasureSoftGramCLIException as e:
-            print_error(f"Error calculating {extracted_path}: {e}\n")
+            print_error(
+                _("Error calculating {path}: {error}\n").format(
+                    path=extracted_path, error=e
+                )
+            )
             return data_calculated, False
 
 
@@ -97,16 +110,18 @@ def command_calculate(args):
 
     except KeyError as e:
         logger.error(f"KeyError: args[{e}] - non-existent parameters")
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         exit(1)
 
     clear_console()
-    print_rule("Calculate")
-    print_info("> Reading config file:")
+    print_rule(_("Calculate"))
+    print_info(_("> Reading config file:"))
 
     config = read_config_file(config_path)
 
-    print_info("\n> Reading extracted files:")
+    print_info(_("\n> Reading extracted files:"))
 
     data_calculated, success = calculate_metrics(extracted_path, config)
 
@@ -115,16 +130,18 @@ def command_calculate(args):
         print_rule()
         sys.exit(1)
 
-    print_success("\nAll calculations performed successfully!")
+    print_success(_("\nAll calculations performed successfully!"))
 
     show_results(output_format, data_calculated, config_path, config)
     print_rule()
 
     print_panel(
-        title="Done",
-        menssage="> See the publications for more information: \n"
-        "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
-        "https://dl.acm.org/doi/10.1145/3422392.3422450 \n",
+        title=_("Done"),
+        menssage=_(
+            "> See the publications for more information: \n"
+            "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
+            "https://dl.acm.org/doi/10.1145/3422392.3422450 \n"
+        ),
     )
 
 
@@ -171,7 +188,9 @@ def show_results(output_format, data_calculated, config_path, config=None):
 
     if len(data_calculated) == 0:
         print_warn(
-            f"WARNING: No extracted file read so no {output_format} was generated!"
+            _(
+                "WARNING: No extracted file read so no {output_format} was generated!"
+            ).format(output_format=output_format)
         )
         return
 
@@ -185,11 +204,11 @@ def show_results(output_format, data_calculated, config_path, config=None):
         show_tree(data_calculated[0], config or pre_config)
 
     elif output_format == "csv":
-        print_info("Exporting CSV...")
+        print_info(_("Exporting CSV..."))
         export_csv(data_calculated, config_path)
 
     elif output_format == "json":
-        print_info("Exporting JSON...")
+        print_info(_("Exporting JSON..."))
         export_json(data_calculated, config_path)
 
 
@@ -241,7 +260,7 @@ def configured_entities(config_entries: list, calculated: list):
 
 def add_measure_nodes(parent, measures_c, measures):
     tree_muted = color_tag("muted")
-    for _, measure in configured_entities(measures_c, measures):
+    for _entry, measure in configured_entities(measures_c, measures):
         Node(f"{tree_muted}{measure['key']} {measure['value']}", parent=parent)
 
 
@@ -259,7 +278,7 @@ def show_tree(data_calculated, config):
     tree_success = color_tag("success")
     tree_accent = color_tag("accent")
 
-    print_info("Overview - tree:\n\n")
+    print_info(_("Overview - tree:\n\n"))
     tsqmi_tree = Node(f"{tree_success}{tsqmi['key']}: {tsqmi['value']}")
 
     # Follows the user's msgram.json and matches entities by key, so removed or
@@ -289,7 +308,9 @@ def export_json(data_calculated: list, file_path: Path = DEFAULT_CONFIG_PATH):
             write_file,
             indent=4,
         )
-    print_success(f"Success: {file_path.name} exported as JSON")
+    print_success(
+        _("Success: {filename} exported as JSON").format(filename=file_path.name)
+    )
 
 
 def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PATH")):
@@ -306,7 +327,7 @@ def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PAT
                 header_column = []
                 columns = []
 
-                for _, value in item.items():
+                for _key, value in item.items():
                     for column in value:
                         header_column.append(column["key"])
                         columns.append(column["value"])
@@ -317,4 +338,6 @@ def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PAT
         writer.writerow(csv_header)
         writer.writerows(csv_rows)
 
-    print_success(f"Success: {file_path.name} exported as CSV")
+    print_success(
+        _("Success: {filename} exported as CSV").format(filename=file_path.name)
+    )

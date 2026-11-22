@@ -6,6 +6,7 @@ from src.config.settings import SUPPORTED_MEASURES
 from src.cli.aggregate_metrics import measures as source_measures
 from src.cli.aggregate_metrics import metrics as source_metrics
 from src.cli.resources.metrics import get_metric_value
+from src.cli.i18n import _
 from src.cli.utils import print_warn
 
 logger = logging.getLogger("msgram")
@@ -117,8 +118,10 @@ def calculate_measures(
     missing_measures = get_missing_measures(extracted, config, calculated_measures)
     for measure_key, missing_metrics in missing_measures.items():
         print_warn(
-            f"Measure '{measure_key}' could not be calculated. "
-            f"Missing metrics: {', '.join(missing_metrics)}"
+            _(
+                "Measure '{measure}' could not be calculated. "
+                "Missing metrics: {metrics}"
+            ).format(measure=measure_key, metrics=", ".join(missing_metrics))
         )
 
     headers = ["Id", "Name", "Description", "Value", "Created at"]

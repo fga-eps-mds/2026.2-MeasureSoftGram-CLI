@@ -8,6 +8,7 @@ from src.cli.commands.cmd_init import command_init
 from src.cli.commands.cmd_extract import command_extract
 from src.cli.commands.cmd_calculate import command_calculate
 from src.cli.aggregate_metrics import measures as source_measures
+from src.cli.i18n import _
 from src.cli.resources.measure import get_configured_measures
 from src.cli.utils import (
     clear_console,
@@ -79,7 +80,9 @@ def command_demo(args):
 
     except Exception as e:
         logger.error(f"KeyError: args[{e}] - non-existent parameters")
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         sys.exit(1)
 
     output_path = Path(output_path).absolute()
@@ -91,9 +94,9 @@ def command_demo(args):
         sys.exit(1)
 
     clear_console()
-    print_rule("MSGram demo", "Running an end-to-end pipeline on a sample dataset:")
-    print_info(f"> Working directory: {output_path}")
-    print_info(f"> Sample dataset:    {raw_data_path}")
+    print_rule("MSGram demo", _("Running an end-to-end pipeline on a sample dataset:"))
+    print_info(_("> Working directory: {path}").format(path=output_path))
+    print_info(_("> Sample dataset:    {path}").format(path=raw_data_path))
 
     output_path.mkdir(parents=True, exist_ok=True)
 
@@ -102,16 +105,17 @@ def command_demo(args):
     # re-running the demo reflects the user's changes and never prompts.
     config_file = output_path / "msgram.json"
     if config_file.exists():
-        print_info(f"> Using existing config file: {config_file}")
+        print_info(_("> Using existing config file: {path}").format(path=config_file))
     else:
         command_init({"config_path": output_path})
 
     github_measures = github_measures_in_config(config_file)
     if github_measures:
         print_warn(
-            "The sample dataset only has SonarQube metrics. These configured "
-            "measures need GitHub data and will not be calculated: "
-            f"{', '.join(github_measures)}"
+            _(
+                "The sample dataset only has SonarQube metrics. These configured "
+                "measures need GitHub data and will not be calculated: {measures}"
+            ).format(measures=", ".join(github_measures))
         )
 
     # Step 2: extract - read the embedded Sonar JSON into a .metrics file.
@@ -134,16 +138,16 @@ def command_demo(args):
     result_name = "calc_msgram.json" if output_format == "json" else "calc_msgram.csv"
     result_file = output_path / result_name
 
-    print_success("\nDemo finished successfully!")
+    print_success(_("\nDemo finished successfully!"))
     print_panel(
-        title="Demo done",
-        menssage=(
+        title=_("Demo done"),
+        menssage=_(
             "> The end-to-end pipeline (init -> extract -> calculate) ran on the "
             "embedded sample dataset.\n"
-            f"> Config file:  {config_file}\n"
-            f"> Result file:  {result_file}\n"
+            "> Config file:  {config_file}\n"
+            "> Result file:  {result_file}\n"
             "> Edit the config file and re-run the demo to see the effect of your "
             "changes (delete it to go back to the default configuration).\n"
             "> Inspect the result or re-run with your own data following the README."
-        ),
+        ).format(config_file=config_file, result_file=result_file),
     )

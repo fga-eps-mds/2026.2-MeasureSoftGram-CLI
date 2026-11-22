@@ -2,6 +2,7 @@ import argparse
 
 from pathlib import Path
 
+from src.cli.i18n import _
 from src.cli.utils import THEME_CHOICES, print_help
 from src.cli.commands.cmd_diff import command_diff
 from src.cli.commands.cmd_init import command_init
@@ -39,7 +40,9 @@ class ThemedArgumentParser(argparse.ArgumentParser):
         from src.cli.utils import print_error
 
         self.print_usage()
-        print_error(f"{self.prog}: error: {message}")
+        print_error(
+            _("{prog}: error: {message}").format(prog=self.prog, message=message)
+        )
         self.exit(2)
 
 
@@ -49,29 +52,31 @@ def add_theme_argument(parser, default=argparse.SUPPRESS, dest="theme"):
         dest=dest,
         choices=THEME_CHOICES,
         default=default,
-        help="Terminal contrast theme. Use auto, dark, or light.",
+        help=_("Terminal contrast theme. Use auto, dark, or light."),
     )
 
 
 def create_parser():
     parser = ThemedArgumentParser(
         prog="msgram",
-        description="Command line interface for measuresoftgram",
-        epilog="Thanks for using %(prog)s!",
+        description=_("Command line interface for measuresoftgram"),
+        epilog=_("Thanks for using %(prog)s!"),
     )
     add_theme_argument(parser, default="auto")
 
     subparsers = parser.add_subparsers(
-        title="subcommands",
+        title=_("subcommands"),
         dest="command",
-        help="sub-command help",
+        help=_("sub-command help"),
         parser_class=ThemedArgumentParser,
     )
 
     # =====================================< COMMAND init >=====================================
     parser_init = subparsers.add_parser(
         "init",
-        help="Create a init file `.measuresoftgram` with your default organization, product and repositories",
+        help=_(
+            "Create a init file `.measuresoftgram` with your default organization, product and repositories"
+        ),
     )
     add_theme_argument(parser_init, dest="command_theme")
 
@@ -80,14 +85,18 @@ def create_parser():
         "--config_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the directory with the model configuration file (msgram.json).",
+        help=_(
+            "Path to the directory with the model configuration file (msgram.json)."
+        ),
     )
     parser_init.set_defaults(func=command_init)  # function command init
 
     # =====================================< COMMAND demo >=====================================
     parser_demo = subparsers.add_parser(
         "demo",
-        help="Run an end-to-end pipeline (init, extract, calculate) on an embedded sample dataset.",
+        help=_(
+            "Run an end-to-end pipeline (init, extract, calculate) on an embedded sample dataset."
+        ),
     )
     add_theme_argument(parser_demo, dest="command_theme")
 
@@ -96,7 +105,7 @@ def create_parser():
         "--output_path",
         type=lambda p: Path(p).absolute(),
         default=Path.cwd() / "msgram-demo",
-        help="Path to the working directory where the demo results are written.",
+        help=_("Path to the working directory where the demo results are written."),
     )
 
     parser_demo.add_argument(
@@ -105,17 +114,16 @@ def create_parser():
         type=str,
         choices=AVAILABLE_GEN_FORMATS,
         default="csv",
-        help=(
-            "The format of the calculate output (export) values are: "
-            + ", ".join(AVAILABLE_GEN_FORMATS)
-        ),
+        help=_(
+            "The format of the calculate output (export) values are: {formats}"
+        ).format(formats=", ".join(AVAILABLE_GEN_FORMATS)),
     )
     parser_demo.set_defaults(func=command_demo)  # function command demo
 
     # =====================================< COMMAND list >=====================================
     parser_list_config = subparsers.add_parser(
         "list",
-        help="Listing configurations parameters.",
+        help=_("Listing configurations parameters."),
     )
     add_theme_argument(parser_list_config, dest="command_theme")
 
@@ -124,13 +132,15 @@ def create_parser():
         "--config_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the directory with the model configuration file (msgram.json).",
+        help=_(
+            "Path to the directory with the model configuration file (msgram.json)."
+        ),
     )
 
     parser_list_config.add_argument(
         "all",
         nargs="?",
-        help="Show configuration file.",
+        help=_("Show configuration file."),
     )
 
     parser_list_config.set_defaults(func=command_list)  # function command list config
@@ -138,7 +148,7 @@ def create_parser():
     # =====================================< COMMAND weights >=====================================
     parser_weights = subparsers.add_parser(
         "weights",
-        help="Define the model weights by pairwise comparison (AHP).",
+        help=_("Define the model weights by pairwise comparison (AHP)."),
     )
     add_theme_argument(parser_weights, dest="command_theme")
 
@@ -147,26 +157,32 @@ def create_parser():
         "--config_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the directory with the model configuration file (msgram.json).",
+        help=_(
+            "Path to the directory with the model configuration file (msgram.json)."
+        ),
     )
 
     parser_weights.add_argument(
         "--group",
         type=str,
         default=None,
-        help="Redefine only one group, e.g. characteristics or reliability/subcharacteristics.",
+        help=_(
+            "Redefine only one group, e.g. characteristics or reliability/subcharacteristics."
+        ),
     )
     parser_weights.set_defaults(func=command_weights)  # function command weights
 
     # =====================================< COMMAND extract >=====================================
-    parser_extract = subparsers.add_parser("extract", help="Extract supported metrics")
+    parser_extract = subparsers.add_parser(
+        "extract", help=_("Extract supported metrics")
+    )
     add_theme_argument(parser_extract, dest="command_theme")
 
     parser_extract.add_argument(
         "-sp",
         "--sonar_path",
         type=lambda p: Path(p).absolute(),
-        help="Path to analysis data directory",
+        help=_("Path to analysis data directory"),
     )
 
     parser_extract.add_argument(
@@ -174,17 +190,17 @@ def create_parser():
         "--extracted_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the extracted directory",
+        help=_("Path to the extracted directory"),
     )
 
     parser_extract.add_argument(
         "-gl",
         "--gh_label",
         type=str,
-        help=(
+        help=_(
             "Selected label name to be considered in the Story Issues extraction."
-            + ' Format "XX YY", including quotation marks.'
-            + ' Default, not case sensitive: "US", "User Story" or "User Stories".'
+            ' Format "XX YY", including quotation marks.'
+            ' Default, not case sensitive: "US", "User Story" or "User Stories".'
         ),
     )
 
@@ -192,18 +208,20 @@ def create_parser():
         "-gw",
         "--gh_workflows",
         type=str,
-        help="Selected workflow name to be considered in the CI Feedback Time extraction."
-        + ' Format "XX YY", including quotation marks.'
-        + ' Default, not case sensitive: "build".',
+        help=_(
+            "Selected workflow name to be considered in the CI Feedback Time extraction."
+            ' Format "XX YY", including quotation marks.'
+            ' Default, not case sensitive: "build".'
+        ),
     )
 
     parser_extract.add_argument(
         "-gd",
         "--gh_date_range",
         type=str,
-        help=(
+        help=_(
             'Filter range of dates considered on extraction, with format "dd/mm/yyyy-dd/mm/yyyy"'
-            + ", including quotation marks."
+            ", including quotation marks."
         ),
     )
 
@@ -211,28 +229,34 @@ def create_parser():
         "-gr",
         "--gh_repository",
         type=str,
-        help="Path to analysis git repository",
+        help=_("Path to analysis git repository"),
     )
 
     parser_extract.add_argument(
         "-p1",
         "--pe_release_1",
         type=lambda p: Path(p).absolute(),
-        help="Path to the .csv file of the first release, used for extracting performance efficiency data",
+        help=_(
+            "Path to the .csv file of the first release, used for extracting performance efficiency data"
+        ),
     )
 
     parser_extract.add_argument(
         "-p2",
         "--pe_release_2",
         type=lambda p: Path(p).absolute(),
-        help="Path to the .csv file of the second release, used for extracting performance efficiency data",
+        help=_(
+            "Path to the .csv file of the second release, used for extracting performance efficiency data"
+        ),
     )
 
     parser_extract.add_argument(
         "-pn",
         "--pe_repository_name",
         type=str,
-        help="Name of the repository associated with the extracted performance efficiency data",
+        help=_(
+            "Name of the repository associated with the extracted performance efficiency data"
+        ),
     )
 
     parser_extract.set_defaults(func=command_extract)  # function command extract
@@ -240,7 +264,7 @@ def create_parser():
     # =====================================< COMMAND calculate >=====================================
     parser_calculate = subparsers.add_parser(
         "calculate",
-        help="Calculates all entities",
+        help=_("Calculates all entities"),
     )
     add_theme_argument(parser_calculate, dest="command_theme")
 
@@ -249,7 +273,7 @@ def create_parser():
         "--extracted_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the extracted directory",
+        help=_("Path to the extracted directory"),
     )
 
     parser_calculate.add_argument(
@@ -257,7 +281,9 @@ def create_parser():
         "--config_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the directory with the model configuration file (msgram.json).",
+        help=_(
+            "Path to the directory with the model configuration file (msgram.json)."
+        ),
     )
 
     parser_calculate.add_argument(
@@ -266,9 +292,8 @@ def create_parser():
         type=str,
         choices=AVAILABLE_GEN_FORMATS,
         default="csv",
-        help=(
-            "The format of the output (export) values are: "
-            + ", ".join(AVAILABLE_GEN_FORMATS)
+        help=_("The format of the output (export) values are: {formats}").format(
+            formats=", ".join(AVAILABLE_GEN_FORMATS)
         ),
     )
     parser_calculate.set_defaults(func=command_calculate)  # function command calculate
@@ -276,8 +301,10 @@ def create_parser():
     # =====================================< COMMAND norm_diff >=====================================
     parser_norm_diff = subparsers.add_parser(
         "norm_diff",
-        help="Calculates the Frobenius norm of the difference between tensors RP and RD, which means the quantitative "
-        "perception of the discrepancy between the planned and developed quality requirements in a release.",
+        help=_(
+            "Calculates the Frobenius norm of the difference between tensors RP and RD, which means the quantitative "
+            "perception of the discrepancy between the planned and developed quality requirements in a release."
+        ),
     )
     add_theme_argument(parser_norm_diff, dest="command_theme")
 
@@ -286,8 +313,10 @@ def create_parser():
         "--rp_path",
         type=lambda p: Path(p).absolute(),
         required=True,
-        help="path to the .json file with the planned/wished values ​​for the quality "
-        "characteristics of a release. quality requirements goals for a release.",
+        help=_(
+            "path to the .json file with the planned/wished values ​​for the quality "
+            "characteristics of a release. quality requirements goals for a release."
+        ),
     )
 
     parser_norm_diff.add_argument(
@@ -295,8 +324,10 @@ def create_parser():
         "--rd_path",
         type=lambda p: Path(p).absolute(),
         required=True,
-        help="path to the .json file with the model-calculated values ​​for a release's "
-        "quality characteristics observed/developed.",
+        help=_(
+            "path to the .json file with the model-calculated values ​​for a release's "
+            "quality characteristics observed/developed."
+        ),
     )
 
     parser_norm_diff.set_defaults(
@@ -306,8 +337,10 @@ def create_parser():
     # =====================================< COMMAND diff >=====================================
     parser_calculate = subparsers.add_parser(
         "diff",
-        help="Calculates and interprets the difference between the planned and developed quantitative perceptions "
-        "of each quality characteristic, represented by the RP and RD tensors.",
+        help=_(
+            "Calculates and interprets the difference between the planned and developed quantitative perceptions "
+            "of each quality characteristic, represented by the RP and RD tensors."
+        ),
     )
     add_theme_argument(parser_calculate, dest="command_theme")
 
@@ -316,8 +349,10 @@ def create_parser():
         "--rd_path",
         type=lambda p: Path(p).absolute(),
         required=True,
-        help="Path to the .json file with the model-calculated values for a release's quality"
-        "characteristics observed/developed.",
+        help=_(
+            "Path to the .json file with the model-calculated values for a release's quality"
+            "characteristics observed/developed."
+        ),
     )
 
     parser_calculate.add_argument(
@@ -325,8 +360,10 @@ def create_parser():
         "--rp_path",
         type=lambda p: Path(p).absolute(),
         required=True,
-        help="Path to the .json file with the planned/wished values for the quality characteristics"
-        "of a release. Quality requirements goals for a release.",
+        help=_(
+            "Path to the .json file with the planned/wished values for the quality characteristics"
+            "of a release. Quality requirements goals for a release."
+        ),
     )
 
     parser_calculate.add_argument(
@@ -334,7 +371,7 @@ def create_parser():
         "--output_format",
         type=str,
         choices=AVAILABLE_GEN_FORMATS,
-        help=("The format of the output (export) values is tabular"),
+        help=_("The format of the output (export) values is tabular"),
     )
     parser_calculate.set_defaults(func=command_diff)
 

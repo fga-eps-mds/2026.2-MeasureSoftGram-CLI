@@ -1,5 +1,6 @@
 import logging
 from core.transformations import norm_diff
+from src.cli.i18n import _
 from src.cli.jsonReader import open_json_file
 from src.cli.utils import (
     print_error,
@@ -19,7 +20,11 @@ def read_planned_file(file_path, sort_key=None):
         json_data = open_json_file(file_path)
         return sorted(json_data, key=lambda x: x[sort_key]) if sort_key else json_data
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error reading planned file in {file_path}: {e}\n")
+        print_error(
+            _("Error reading planned file in {path}: {error}\n").format(
+                path=file_path, error=e
+            )
+        )
         print_rule()
         exit(1)
 
@@ -42,7 +47,11 @@ def read_calculated_file(file_path):
 
         return calculated_data
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error reading calculated file in {file_path}: {e}\n")
+        print_error(
+            _("Error reading calculated file in {path}: {error}\n").format(
+                path=file_path, error=e
+            )
+        )
         print_rule()
         exit(1)
 
@@ -53,7 +62,9 @@ def command_norm_diff(args):
         rd_path = args["rd_path"]
     except KeyError as e:
         logger.error(f"KeyError: args[{e}] - non-existent parameters")
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         exit(1)
 
     planned_data = read_planned_file(rp_path, sort_key="key")
@@ -65,19 +76,21 @@ def command_norm_diff(args):
     )
     norm_diff_value = norm_diff(planned_vector, calculated_vector)
 
-    print_success("\nNorm diff calculation performed successfully!\n")
+    print_success(_("\nNorm diff calculation performed successfully!\n"))
 
     print_info(
-        "The norm_diff value indicates the difference between the observed "
-        "quality (Rd) and the planned target (Rp). A norm_diff of 0 means that the "
-        "observed quality perfectly aligns with the planned target. If norm_diff is "
-        "not equal to 0, it shows a deviation from the target. In this case, you "
-        "should determine whether the performance is above or below the planned "
-        "quality. For a detailed analysis of these differences, use the msgram diff "
-        "command.\n"
+        _(
+            "The norm_diff value indicates the difference between the observed "
+            "quality (Rd) and the planned target (Rp). A norm_diff of 0 means that the "
+            "observed quality perfectly aligns with the planned target. If norm_diff is "
+            "not equal to 0, it shows a deviation from the target. In this case, you "
+            "should determine whether the performance is above or below the planned "
+            "quality. For a detailed analysis of these differences, use the msgram diff "
+            "command.\n"
+        )
     )
 
-    print_info(f"Norm Diff: {norm_diff_value}")
+    print_info(_("Norm Diff: {value}").format(value=norm_diff_value))
     print_rule()
 
 
@@ -110,6 +123,6 @@ def extract_values(planned_data, calculated_data, rp_path, rd_path):
 
         return (np.array(planned_values), np.array(calculated_values))
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error extracting values: {e}\n")
+        print_error(_("Error extracting values: {error}\n").format(error=e))
         print_rule()
         exit(1)

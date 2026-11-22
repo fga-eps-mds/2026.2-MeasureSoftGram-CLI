@@ -1,3 +1,4 @@
+from src.cli.i18n import _
 from src.cli.utils import (
     clear_console,
     color_tag,
@@ -102,30 +103,38 @@ def command_list(args):
         config_path: Path = args["config_path"]
 
         if config_path != DEFAULT_CONFIG_PATH:
-            print_info("Será usado arquivo informado pelo usuário: ")
+            print_info(_("Será usado arquivo informado pelo usuário: "))
             file_path = str(config_path) + "/msgram.json"
         else:
             print_info(
-                "Não foi informado caminho do arquivo de configuração, será usado caminho padrão."
+                _(
+                    "Não foi informado caminho do arquivo de configuração, será usado caminho padrão."
+                )
             )
 
     except Exception as e:
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         exit(1)
 
-    print_rule("Listing Configuration Parameters")
+    print_rule(_("Listing Configuration Parameters"))
 
     if not (os.path.exists(file_path)):
-        print_info("O arquivo de configuração não foi encontrado. \n")
+        print_info(_("O arquivo de configuração não foi encontrado. \n"))
         print_info(
-            "Execute o comando 'msgram init' no projeto desejado para criá-lo.\n"
+            _("Execute o comando 'msgram init' no projeto desejado para criá-lo.\n")
         )
         print_info(
-            "Ou use 'msgram init --config_path <path>' para informar o caminho ate o arquivo."
+            _(
+                "Ou use 'msgram init --config_path <path>' para informar o caminho ate o arquivo."
+            )
         )
         sys.exit(1)
 
-    print_info(f"MSGram config file '{FILE_CONFIG}' exists already!")
+    print_info(
+        _("MSGram config file '{file}' exists already!").format(file=FILE_CONFIG)
+    )
 
     f = open(file_path)
 
@@ -136,5 +145,7 @@ def command_list(args):
         print_info(output_string)
 
     console.line()
-    print_info("Para definir os pesos por comparação, use: msgram weights")
-    print_info("Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`")
+    print_info(_("Para definir os pesos por comparação, use: msgram weights"))
+    print_info(
+        _("Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`")
+    )
