@@ -1,5 +1,4 @@
 import pytest
-from babel.messages import mofile, pofile
 
 from src.cli import i18n
 from src.cli.parsers import create_parser
@@ -10,6 +9,8 @@ def compiled_catalog():
     po_path = i18n.LOCALE_DIR / "pt_BR" / "LC_MESSAGES" / f"{i18n.DOMAIN}.po"
     mo_path = po_path.with_suffix(".mo")
     if not mo_path.exists() or po_path.stat().st_mtime > mo_path.stat().st_mtime:
+        from babel.messages import mofile, pofile
+
         with po_path.open("rb") as po_file:
             catalog = pofile.read_po(po_file, locale="pt_BR")
         with mo_path.open("wb") as mo_file:
