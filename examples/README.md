@@ -11,7 +11,8 @@ that both copies stay the same.
 
 Contains one real SonarCloud export of this repository
 (`fga-eps-mds-2026.2-MeasureSoftGram-CLI-25-10-2026-17-57-36-develop.json`),
-collected by the "Export de métricas" workflow (`parser.py`) on 25/10/2026.
+collected on 25/10/2026 by the former "Export de métricas" workflow (removed
+when the metrics collection moved to the DOC repository).
 It includes `sqale_debt_ratio`, so the demo calculates `technical_debt_ratio`.
 It has no GitHub data, so `team_throughput` and `ci_feedback_time` are not
 calculated (the demo warns about them).
@@ -30,8 +31,10 @@ external data or network access is required.
 The file name keeps the `dd-mm-yyyy-hh-mm-ss` date pattern on purpose: the
 `extract` and `calculate` commands read the version from that date. The
 original export in the DOC repository (`Analytics/data`) is named with the
-`mm-dd-yyyy` pattern used by `parser.py`; it was renamed here to match the
+`mm-dd-yyyy` pattern used by that old workflow; it was renamed here to match the
 CLI convention.
 
-To refresh the dataset, copy the latest CLI export from the DOC repository
-into both folders (renaming the date to `dd-mm-yyyy`) and run the tests.
+The per-repository export no longer exists. To refresh the dataset, save the
+SonarCloud `api/measures/component_tree` response of the CLI project (the same
+request the old workflow made) into both folders, named with the `dd-mm-yyyy`
+pattern, and run the tests.
