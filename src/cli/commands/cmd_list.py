@@ -20,6 +20,68 @@ import json
 import os
 import sys
 
+MEASURE_TO_METRIC = {
+    "passed_tests": ["tests", "test_failures", "test_errors"],
+    "test_builds": ["tests", "test_execution_time"],
+    "test_coverage": ["coverage"],
+    "non_complex_file_density": ["functions", "complexity"],
+    "commented_file_density": ["comment_lines_density"],
+    "duplication_absense": ["duplicated_lines_density"],
+    "technical_debt_ratio": ["sqale_debt_ratio"],
+    "team_throughput": ["resolved_issues", "total_issues"],
+    "ci_feedback_time": ["sum_ci_feedback_times", "total_builds"],
+}
+
+
+def _format_measure_metrics(measure, indent, main_color, success_color):
+    if "min_threshold" not in measure or "max_threshold" not in measure:
+        return []
+
+    min_threshold = measure.get("min_threshold")
+    max_threshold = measure.get("max_threshold")
+    measure_key = measure.get("key")
+    metrics = MEASURE_TO_METRIC.get(measure_key, [])
+
+    lines = [f"{main_color}{indent}{indent}│  Métrica(s):"]
+    min_max = ""
+    for metric in metrics:
+        lines.append(f"{main_color}{indent}{indent}│  └─{success_color}{metric}")
+        min_max = (
+            f"Min = {success_color}{min_threshold} {main_color}"
+            f"e Max = {success_color}{max_threshold}"
+        )
+    lines.append(f"{main_color}{indent}{indent}│  │ Valores de referência: {min_max}")
+    lines.append(f"{main_color}{indent}{indent}│  Fim-Métrica(s)")
+    return lines
+
+
+def _format_single_measure(measure, indent, main_color, success_color):
+    measure_key = measure.get("key")
+    lines = [
+        f"{main_color}{indent}│  Medida(s):",
+        f"{main_color}{indent}{indent}│  {success_color}{measure_key}",
+        f"{main_color}{indent}{indent}│  Peso: {success_color}{measure['weight']}%",
+    ]
+    lines.extend(_format_measure_metrics(measure, indent, main_color, success_color))
+    lines.append(f"{main_color}{indent}│  Fim-Medida(s)")
+    return lines
+
+
+def _format_measures(measures, indent, main_color, success_color):
+    lines = []
+    for measure in measures:
+        lines.extend(_format_single_measure(measure, indent, main_color, success_color))
+    lines.append(f"{main_color}Fim-SubCaracterística")
+    return lines
+
+
+def _process_subcharacteristics(subcharacteristics, indent, main_color, stack):
+    lines = []
+    for subchar in subcharacteristics:
+        lines.append(f"{main_color}{indent}Sub-característica(s):")
+        stack.append((subchar, f"{indent}│  "))  # Use the ASCII character │ (code 179)
+    return lines
+
 
 def print_json_tree(data):
     result = []
@@ -27,17 +89,6 @@ def print_json_tree(data):
     is_top = True
     main_color = color_tag("main")
     success_color = color_tag("success")
-
-    measure_to_metric = {}
-    measure_to_metric["passed_tests"] = ["tests", "test_failures", "test_errors"]
-    measure_to_metric["test_builds"] = ["tests", "test_execution_time"]
-    measure_to_metric["test_coverage"] = ["coverage"]
-    measure_to_metric["non_complex_file_density"] = ["functions", "complexity"]
-    measure_to_metric["commented_file_density"] = ["comment_lines_density"]
-    measure_to_metric["duplication_absense"] = ["duplicated_lines_density"]
-    measure_to_metric["technical_debt_ratio"] = ["sqale_debt_ratio"]
-    measure_to_metric["team_throughput"] = ["resolved_issues", "total_issues"]
-    measure_to_metric["ci_feedback_time"] = ["sum_ci_feedback_times", "total_builds"]
 
     while stack:
         data, indent = stack.pop()
@@ -52,44 +103,17 @@ def print_json_tree(data):
         result.append(f"{main_color}{indent}Peso: {success_color}{weight}%")
 
         if "subcharacteristics" in data:
-            for subchar in data["subcharacteristics"]:
-                result.append(f"{main_color}{indent}Sub-característica(s):")
-                stack.append(
-                    (subchar, f"{indent}│  ")
-                )  # Use the ASCII character │ (code 179)
+            result.extend(
+                _process_subcharacteristics(
+                    data["subcharacteristics"], indent, main_color, stack
+                )
+            )
 
         if "measures" in data:
-            for measure in data["measures"]:
-                result.append(f"{main_color}{indent}│  Medida(s):")
-                measure_key = measure.get("key")
-                result.append(
-                    f"{main_color}{indent}{indent}│  {success_color}{measure_key}"
-                )
-                result.append(
-                    f"{main_color}{indent}{indent}│  Peso: {success_color}{measure['weight']}%"
-                )
-                if "min_threshold" in measure and "max_threshold" in measure:
-                    min_threshold = measure.get("min_threshold")
-                    max_threshold = measure.get("max_threshold")
-                    result.append(f"{main_color}{indent}{indent}│  Métrica(s):")
-                    metrics = measure_to_metric.get(
-                        measure_key, []
-                    )  # Get associated metrics
-                    min_max = ""
-                    for metric in metrics:
-                        result.append(
-                            f"{main_color}{indent}{indent}│  └─{success_color}{metric}"
-                        )
-                        min_max = (
-                            f"Min = {success_color}{min_threshold} {main_color}"
-                            f"e Max = {success_color}{max_threshold}"
-                        )
-                    result.append(
-                        f"{main_color}{indent}{indent}│  │ Valores de referência: {min_max}"
-                    )
-                    result.append(f"{main_color}{indent}{indent}│  Fim-Métrica(s)")
-                result.append(f"{main_color}{indent}│  Fim-Medida(s)")
-            result.append(f"{main_color}Fim-SubCaracterística")
+            result.extend(
+                _format_measures(data["measures"], indent, main_color, success_color)
+            )
+
     result.append(f"{main_color}Fim-Característica")
 
     return "\n".join(result)
