@@ -17,6 +17,8 @@ from src.config.settings import (
     AVAILABLE_GEN_FORMATS,
 )
 
+CONFIG_PATH_HELP = "Path to the directory with the model configuration file (msgram.json)."
+
 
 class ThemedArgumentParser(argparse.ArgumentParser):
     def print_help(self, file=None):
@@ -80,7 +82,7 @@ def create_parser():
         "--config_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the directory with the model configuration file (msgram.json).",
+        help=CONFIG_PATH_HELP,
     )
     parser_init.set_defaults(func=command_init)  # function command init
 
@@ -124,7 +126,7 @@ def create_parser():
         "--config_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the directory with the model configuration file (msgram.json).",
+        help=CONFIG_PATH_HELP,
     )
 
     parser_list_config.add_argument(
@@ -257,7 +259,7 @@ def create_parser():
         "--config_path",
         type=lambda p: Path(p).absolute(),
         default=DEFAULT_CONFIG_PATH,
-        help="Path to the directory with the model configuration file (msgram.json).",
+        help=CONFIG_PATH_HELP,
     )
 
     parser_calculate.add_argument(
