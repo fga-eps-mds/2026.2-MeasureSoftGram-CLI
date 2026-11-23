@@ -1,11 +1,11 @@
-from src.cli.resources.weights import weight_sum_warnings
+from src.cli.resources.weights import print_weight_errors, validate_weights
 from src.cli.utils import (
     clear_console,
     color_tag,
+    console,
     print_error,
     print_info,
     print_rule,
-    print_warn,
 )
 
 from src.config.settings import (
@@ -18,6 +18,7 @@ from pathlib import Path
 
 import json
 import os
+import sys
 
 
 def print_json_tree(data):
@@ -123,7 +124,7 @@ def command_list(args):
         print_info(
             "Ou use 'msgram init --config_path <path>' para informar o caminho ate o arquivo."
         )
-        exit()
+        sys.exit(1)
 
     print_info(f"MSGram config file '{FILE_CONFIG}' exists already!")
 
@@ -135,10 +136,13 @@ def command_list(args):
         output_string = print_json_tree(characteristic)
         print_info(output_string)
 
-    for warning in weight_sum_warnings(data):
-        print_warn(warning)
+    console.line()
+    print_info("Para definir os pesos por comparação, use: msgram weights")
+    print_info("Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`")
 
-    print_info(
-        "\nPara editar o arquivo de configuração utilize em seu terminal o seguinte comando:"
-    )
-    print_info("vim .msgram/msgram.json\n")
+    weight_errors = validate_weights(data)
+    if weight_errors:
+        # DOC#302: mostra a configuração e, no fim, o mesmo erro do calculate
+        console.line()
+        print_weight_errors(weight_errors, file_path)
+        sys.exit(1)

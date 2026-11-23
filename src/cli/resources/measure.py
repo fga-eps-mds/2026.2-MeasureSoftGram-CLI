@@ -101,6 +101,16 @@ def get_measure_value(measures, subchar):
     return measures_calculated
 
 
+def _metric_value_list(value):
+    # Métrica de valor único chega como número ou texto e vira lista de um item;
+    # 0.0 é valor válido (ex.: test_failures) e não pode contar como ausente
+    if value is None or value == []:
+        return None
+    if isinstance(value, list):
+        return [float(item) for item in value]
+    return [float(value)]
+
+
 def _supported_measures_for_config(config: dict) -> list[dict]:
     configured_measures = [m for m in get_configured_measures(config) if m]
     if not configured_measures:
@@ -151,11 +161,7 @@ def calculate_measures(
                 "metrics": [
                     {
                         "key": metric,
-                        "value": (
-                            [float(value) for value in metric_values[metric]]
-                            if metric_values.get(metric)
-                            else None
-                        ),
+                        "value": _metric_value_list(metric_values.get(metric)),
                     }
                     for metric in metric_keys
                 ],

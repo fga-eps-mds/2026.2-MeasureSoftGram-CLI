@@ -12,7 +12,11 @@ import pytest
 
 from src.cli.commands.cmd_calculate import calculate_all
 from src.cli.commands.cmd_extract import component_qualifiers, extract_sonar
-from src.cli.resources.measure import calculate_measures, is_legacy_sonar_extraction
+from src.cli.resources.measure import (
+    _metric_value_list,
+    calculate_measures,
+    is_legacy_sonar_extraction,
+)
 from src.cli.resources.metrics import (
     QUALIFIERS_KEY,
     get_file_metric_values,
@@ -21,6 +25,7 @@ from src.cli.resources.metrics import (
 from genericparser import GenericParser
 from resources import calculate_measures as core_calculate
 from staticfiles import DEFAULT_PRE_CONFIG as pre_config
+from util.exceptions import MeasureSoftGramCoreException
 
 PROJECT = "org_repo"
 
@@ -133,20 +138,56 @@ def test_non_complex_file_density_uses_only_files_with_both_metrics():
     assert measures["non_complex_file_density"] == pytest.approx(expected)
 
 
+def _core_failing_on(measure_key):
+    def fake_core(data, config):
+        if data["measures"][0]["key"] == measure_key:
+            raise MeasureSoftGramCoreException("valor inválido")
+        return core_calculate(data, config)
+
+    return fake_core
+
+
 @patch("src.cli.resources.measure.print_warn")
 def test_core_error_in_one_measure_does_not_stop_the_others(mock_print_warn):
+    with patch(
+        "src.cli.resources.measure.core_calculate",
+        side_effect=_core_failing_on("passed_tests"),
+    ):
+        infos, _ = calculate_measures(_extracted(), pre_config)
+
+    measure_keys = [m["key"] for m in infos["measures"]]
+    assert "passed_tests" not in measure_keys
+    assert "technical_debt_ratio" in measure_keys
+    warnings = [call.args[0] for call in mock_print_warn.call_args_list]
+    assert any(
+        "'passed_tests' could not be calculated: valor inválido" in w for w in warnings
+    )
+
+
+def test_single_test_file_keeps_passed_tests():
+    # com um único UTS, "tests" chega como lista de um item e o Core calcula
     extracted = _extracted()
     del extracted[f"{PROJECT}:tests/test_b.py"]
     del extracted[QUALIFIERS_KEY][f"{PROJECT}:tests/test_b.py"]
 
     infos, _ = calculate_measures(extracted, pre_config)
 
-    # com um único UTS o msgram-core recebe "tests" como número e recusa
-    measure_keys = [m["key"] for m in infos["measures"]]
-    assert "passed_tests" not in measure_keys
-    assert "technical_debt_ratio" in measure_keys
-    warnings = [call.args[0] for call in mock_print_warn.call_args_list]
-    assert any("'passed_tests' could not be calculated" in w for w in warnings)
+    assert "passed_tests" in [m["key"] for m in infos["measures"]]
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (None, None),
+        ([], None),
+        (0.0, [0.0]),
+        ("12", [12.0]),
+        (12.0, [12.0]),
+        (["1", 2.5], [1.0, 2.5]),
+    ],
+)
+def test_metric_value_list(value, expected):
+    assert _metric_value_list(value) == expected
 
 
 def test_legacy_extraction_keeps_previous_behavior():

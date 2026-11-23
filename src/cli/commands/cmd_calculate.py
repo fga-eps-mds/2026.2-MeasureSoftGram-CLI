@@ -2,6 +2,7 @@ import csv
 import json
 import logging
 import re
+import sys
 from pathlib import Path
 
 from anytree import Node, RenderTree
@@ -16,7 +17,7 @@ from src.cli.resources.measure import (
     is_legacy_sonar_extraction,
 )
 from src.cli.resources.tsqmi import calculate_tsqmi
-from src.cli.resources.weights import weight_sum_warnings
+from src.cli.resources.weights import print_weight_errors, validate_weights
 from src.cli.resources.subcharacteristic import calculate_subcharacteristics
 from src.cli.utils import (
     clear_console,
@@ -134,20 +135,27 @@ def command_calculate(args):
     print_info("> Reading config file:")
 
     config = read_config_file(config_path)
-    weight_warnings = weight_sum_warnings(config)
-    for warning in weight_warnings:
-        print_warn(warning)
+    weight_errors = validate_weights(config)
+    if weight_errors:
+        # DOC#302: pesos inválidos impedem o cálculo
+        print_weight_errors(weight_errors, config_path / FILE_CONFIG)
+        print_rule()
+        sys.exit(1)
 
     print_info("\n> Reading extracted files:")
 
     data_calculated, success, warnings = calculate_metrics(extracted_path, config)
-    warnings = weight_warnings + warnings
 
-    if success and warnings:
+    if not success:
+        # nada foi calculado (sem .metrics ou arquivo inválido); o motivo já foi impresso
+        print_rule()
+        sys.exit(1)
+
+    if warnings:
         print_warn(
             f"\nCalculations finished with {len(warnings)} warning(s), see above."
         )
-    elif success:
+    else:
         print_success("\nAll calculations performed successfully!")
 
     show_results(output_format, data_calculated, config_path, config)
