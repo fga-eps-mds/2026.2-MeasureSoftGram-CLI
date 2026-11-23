@@ -1,3 +1,4 @@
+from src.cli.resources.weights import print_weight_errors, validate_weights
 from src.cli.utils import (
     clear_console,
     color_tag,
@@ -138,3 +139,10 @@ def command_list(args):
     console.line()
     print_info("Para definir os pesos por comparação, use: msgram weights")
     print_info("Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`")
+
+    weight_errors = validate_weights(data)
+    if weight_errors:
+        # DOC#302: mostra a configuração e, no fim, o mesmo erro do calculate
+        console.line()
+        print_weight_errors(weight_errors, file_path)
+        sys.exit(1)

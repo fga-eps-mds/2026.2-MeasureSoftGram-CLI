@@ -18,7 +18,9 @@ from tests.e2e.support import (
     rounded,
 )
 
-CALC_DONE = "All calculations performed successfully!"
+# o exemplo só tem dados do SonarQube: as medidas do GitHub configuradas no init
+# geram aviso e a CLI não anuncia sucesso total (DOC#301)
+CALC_DONE = "Calculations finished with 1 warning(s), see above."
 
 
 @pytest.fixture

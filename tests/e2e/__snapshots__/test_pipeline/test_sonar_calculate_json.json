@@ -3,11 +3,11 @@
     "characteristics": [
       {
         "key": "reliability",
-        "value": 0.9404
+        "value": 0.940506
       },
       {
         "key": "maintainability",
-        "value": 0.764928
+        "value": 0.762885
       }
     ],
     "measures": [
@@ -17,19 +17,19 @@
       },
       {
         "key": "test_builds",
-        "value": 0.999348
+        "value": 0.999327
       },
       {
         "key": "test_coverage",
-        "value": 0.817125
+        "value": 0.8175
       },
       {
         "key": "non_complex_file_density",
-        "value": 0.586299
+        "value": 0.579778
       },
       {
         "key": "commented_file_density",
-        "value": 0.05075
+        "value": 0.053421
       },
       {
         "key": "duplication_absense",
@@ -37,7 +37,7 @@
       },
       {
         "key": "technical_debt_ratio",
-        "value": 0.997065
+        "value": 0.994474
       }
     ],
     "repository": [
@@ -49,17 +49,17 @@
     "subcharacteristics": [
       {
         "key": "testing_status",
-        "value": 0.9404
+        "value": 0.940506
       },
       {
         "key": "modifiability",
-        "value": 0.764928
+        "value": 0.762885
       }
     ],
     "tsqmi": [
       {
         "key": "tsqmi",
-        "value": 0.859767
+        "value": 0.858946
       }
     ],
     "version": [
