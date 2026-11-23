@@ -83,36 +83,52 @@ def _calculate_file(json_data, file_name, config, warnings, skipped_by_file):
     return calculate_all(json_data, file_name, config, warnings)
 
 
+def _calculate_directory(extracted_path, config, warnings, skipped_by_file):
+    files = list(extracted_path.glob("*.metrics"))
+    if not files:
+        print_warn(f"No metrics files found in {extracted_path}")
+        return [], False
+
+    data_calculated = []
+    with make_progress_bar() as progress_bar:
+        task_calc = progress_bar.add_task("Calculating metrics: ", total=len(files))
+        for file, file_name in read_multiple_files(extracted_path, "metrics"):
+            data_calculated.append(
+                _calculate_file(file, file_name, config, warnings, skipped_by_file)
+            )
+            progress_bar.advance(task_calc)
+    return data_calculated, True
+
+
+def _calculate_single_file(extracted_path, config, warnings, skipped_by_file):
+    try:
+        json_data = open_json_file(extracted_path)
+    except exceptions.MeasureSoftGramCLIException as e:
+        print_error(f"Error calculating {extracted_path}: {e}\n")
+        return [], False
+    return [
+        _calculate_file(
+            json_data, extracted_path.name, config, warnings, skipped_by_file
+        )
+    ], True
+
+
 def calculate_metrics(extracted_path, config):
     """Calcula os arquivos extraídos. Retorna (resultados, sucesso, avisos)."""
-    data_calculated = []
     warnings = []
     skipped_by_file = []
 
     if not extracted_path.is_file():
-        files = list(extracted_path.glob("*.metrics"))
-        if not files:
-            print_warn(f"No metrics files found in {extracted_path}")
-            return data_calculated, False, warnings
-
-        with make_progress_bar() as progress_bar:
-            task_calc = progress_bar.add_task("Calculating metrics: ", total=len(files))
-            for file, file_name in read_multiple_files(extracted_path, "metrics"):
-                data_calculated.append(
-                    _calculate_file(file, file_name, config, warnings, skipped_by_file)
-                )
-                progress_bar.advance(task_calc)
-    else:
-        try:
-            json_data = open_json_file(extracted_path)
-        except exceptions.MeasureSoftGramCLIException as e:
-            print_error(f"Error calculating {extracted_path}: {e}\n")
-            return data_calculated, False, warnings
-        data_calculated.append(
-            _calculate_file(
-                json_data, extracted_path.name, config, warnings, skipped_by_file
-            )
+        data_calculated, success = _calculate_directory(
+            extracted_path, config, warnings, skipped_by_file
         )
+    else:
+        data_calculated, success = _calculate_single_file(
+            extracted_path, config, warnings, skipped_by_file
+        )
+
+    if not success:
+        return data_calculated, False, warnings
 
     warn_measures_without_source_data(skipped_by_file, warnings)
     return data_calculated, True, warnings
