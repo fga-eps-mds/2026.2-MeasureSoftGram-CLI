@@ -165,7 +165,7 @@
   '''
                                                ╭─────── TSQMI Score ────────╮
                                                │                            │
-                                               │     0.8589457468816378     │
+                                               │     0.858946     │
                                                │                            │
                                                ╰────────────────────────────╯
   
@@ -174,20 +174,20 @@
   ╭───────────────────────┬─────────────────────────╮               ╭────────────────────────┬────────────────────────╮
   │ characteristics       │ values                  │               │ subcharacteristics     │ values                 │
   ├───────────────────────┼─────────────────────────┤               ├────────────────────────┼────────────────────────┤
-  │ reliability           │ 0.94050647353777        │               │ testing_status         │ 0.94050647353777       │
-  │ maintainability       │ 0.7628850301397735      │               │ modifiability          │ 0.7628850301397735     │
+  │ reliability           │ 0.940506        │               │ testing_status         │ 0.940506       │
+  │ maintainability       │ 0.762885      │               │ modifiability          │ 0.762885     │
   ╰───────────────────────┴─────────────────────────╯               ╰────────────────────────┴────────────────────────╯
                        measures
   ╭──────────────────────────┬──────────────────────╮
   │ measures                 │ values               │
   ├──────────────────────────┼──────────────────────┤
   │ passed_tests             │ 1.0                  │
-  │ test_builds              │ 0.9993274900448634   │
+  │ test_builds              │ 0.999327   │
   │ test_coverage            │ 0.8175               │
-  │ non_complex_file_density │ 0.5797780259667737   │
-  │ commented_file_density   │ 0.053421052631578946 │
+  │ non_complex_file_density │ 0.579778   │
+  │ commented_file_density   │ 0.053421 │
   │ duplication_absense      │ 1.0                  │
-  │ technical_debt_ratio     │ 0.9944736842105263   │
+  │ technical_debt_ratio     │ 0.994474   │
   ╰──────────────────────────┴──────────────────────╯
   
   
@@ -211,18 +211,18 @@
   ℹ Overview - tree:
   
   
-  ℹ tsqmi: 0.8589457468816378
-  ℹ ├── reliability: 0.94050647353777
-  ℹ │   └── testing_status 0.94050647353777
+  ℹ tsqmi: 0.858946
+  ℹ ├── reliability: 0.940506
+  ℹ │   └── testing_status 0.940506
   ℹ │       ├── passed_tests 1.0
-  ℹ │       ├── test_builds 0.9993274900448634
+  ℹ │       ├── test_builds 0.999327
   ℹ │       └── test_coverage 0.8175
-  ℹ └── maintainability: 0.7628850301397735
-  ℹ     └── modifiability 0.7628850301397735
-  ℹ         ├── non_complex_file_density 0.5797780259667737
-  ℹ         ├── commented_file_density 0.053421052631578946
+  ℹ └── maintainability: 0.762885
+  ℹ     └── modifiability 0.762885
+  ℹ         ├── non_complex_file_density 0.579778
+  ℹ         ├── commented_file_density 0.053421
   ℹ         ├── duplication_absense 1.0
-  ℹ         └── technical_debt_ratio 0.9944736842105263
+  ℹ         └── technical_debt_ratio 0.994474
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   
   
