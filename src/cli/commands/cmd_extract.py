@@ -7,7 +7,7 @@ import sys
 from time import perf_counter
 from pathlib import Path
 
-from genericparser import GenericParser
+from genericparser import GenericParser, GithubConnectionError
 
 from src.cli.jsonReader import folder_reader
 from src.cli.utils import (
@@ -70,9 +70,14 @@ def extract_github(
         "dates": gh_date_range if gh_date_range else None,
     }
     print_info(f"\n> Extract and save metrics [{input_origin}]:")
-    result = parser.parse(
-        input_value=gh_repository, type_input=input_origin, filters=filters
-    )
+    try:
+        result = parser.parse(
+            input_value=gh_repository, type_input=input_origin, filters=filters
+        )
+    except GithubConnectionError as error:
+        logger.error(f"Error: {error}")
+        print_error(f"Error: could not reach the GitHub API, no metrics were saved ({error})")
+        sys.exit(1)
     repository_name = gh_repository.replace("/", "-")
     save_file_with_results(
         extracted_path,
@@ -148,7 +153,7 @@ def command_extract(args):
         print_error(
             "Error: Some pe_ parameters for extracting the performance efficiency data are missing"
         )
-        exit()
+        sys.exit(1)
 
     # First check if sonar_path and gh_repository are none
     if (sonar_path is None) and (gh_repository is None) and (pe_params == 0):
