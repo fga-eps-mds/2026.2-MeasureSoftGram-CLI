@@ -40,13 +40,27 @@ jobs:
       - name: Rodar testes e gerar cobertura
         run: tox -e test_cli
 
+      # Gera um token de curta duração do GitHub App da organização (msgram-bot), só com acesso às issues do DOC.
+      # Precisa da variável DOC_APP_CLIENT_ID e do secret DOC_APP_PRIVATE_KEY (organização fga-eps-mds).
+      - name: Gerar token do App para o DOC
+        id: doc-token
+        if: always() && github.event_name == 'push'
+        continue-on-error: true
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ vars.DOC_APP_CLIENT_ID }}
+          private-key: ${{ secrets.DOC_APP_PRIVATE_KEY }}
+          owner: fga-eps-mds
+          repositories: 2026.2-MeasureSoftGram-DOC
+
       # Comenta na issue de cada US (repositório DOC) o resultado dos testes marcados com @pytest.mark.us
-      # (mapa em tests/e2e/acceptance-issues.json); sem o secret DOC_ISSUES_TOKEN, o passo só avisa
+      # (mapa em tests/e2e/acceptance-issues.json); os comentários aparecem como o App (msgram-bot[bot]).
+      # Sem o token do App, o passo só avisa.
       - name: Publicar resultado nas issues das US
         if: always() && github.event_name == 'push'
         continue-on-error: true
         env:
-          DOC_ISSUES_TOKEN: ${{ secrets.DOC_ISSUES_TOKEN }}
+          DOC_ISSUES_TOKEN: ${{ steps.doc-token.outputs.token }}
         run: python scripts/acceptance_comment.py junit.xml
 
       # O SonarCloud só deve ser executado se:
