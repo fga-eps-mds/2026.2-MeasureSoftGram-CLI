@@ -43,7 +43,7 @@ source .venv/bin/activate
 make install
 ```
 
-*(Equivale a `pip install -r requirements.txt`, que instala o próprio pacote em modo editável — o comando `msgram` fica disponível no terminal).*
+*(Equivale a `pip install -r requirements.txt babel` seguido de `make i18n-compile`: instala o próprio pacote em modo editável — o comando `msgram` fica disponível no terminal — e compila as traduções `.mo`. Sem os `.mo`, que não são versionados, a CLI fica sempre em inglês, sem aviso.)*
 
 ### 3. Verificar a instalação
 
@@ -84,7 +84,7 @@ Para ver o efeito de uma configuração diferente, edite `./msgram-demo/msgram.j
 
 | Comando | Descrição |
 |---|---|
-| `make install` | Instala as dependências, incluindo o próprio pacote em modo editável |
+| `make install` | Instala as dependências, incluindo o próprio pacote em modo editável, e compila as traduções |
 | `make test` | Roda testes + lint via `tox` |
 | `make lint` | Roda `black` e `flake8` via `tox` |
 | `make format` | Formata o código com `black` |

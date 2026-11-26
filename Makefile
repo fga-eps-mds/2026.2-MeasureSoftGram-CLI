@@ -1,7 +1,8 @@
 .PHONY: install test lint format build clean i18n-extract i18n-compile help
 
-install:  ## Instala as dependencias (inclui o proprio pacote em modo editavel)
-	pip install -r requirements.txt
+install:  ## Instala as dependencias (inclui o proprio pacote em modo editavel) e compila as traducoes
+	pip install -r requirements.txt babel
+	$(MAKE) i18n-compile
 
 test:  ## Roda testes + lint via tox
 	tox
