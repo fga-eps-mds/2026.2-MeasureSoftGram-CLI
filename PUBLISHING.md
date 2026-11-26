@@ -99,7 +99,7 @@ passo 1. So promova para final quando a rc estiver boa.
 
 > Onde este workflow roda de verdade: a producao sai do repositorio que e dono
 > do projeto no PyPI. No fluxo da FGA, o trabalho do semestre acontece no fork
-> (`2026.1-...`) e e integrado por merge no repositorio upstream
+> (por exemplo, `2026.2-...`) e e integrado por merge no repositorio upstream
 > (`MeasureSoftGram-CLI`), de onde a release sai. Configure o trusted publisher
 > apontando para o repositorio de onde a tag de release sera criada.
 
