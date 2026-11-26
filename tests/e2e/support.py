@@ -30,10 +30,23 @@ def rounded(value, digits=6):
     return value
 
 
+LONG_FLOAT = re.compile(r"( *)(?<![\d./])(\d+\.\d{7,})(?![\d/])( *)")
+
+
+def _round_float(match):
+    leading, number, trailing = match.groups()
+    return (
+        (" " if leading else "") + str(round(float(number), 6)) + (" " if trailing else "")
+    )
+
+
 def normalize(text, tmp_path):
     """Tira do texto o que muda a cada execução: caminho temporário, tempos e espaços de padding do rich."""
     text = text.replace(str(tmp_path), "<TMP>")
     text = re.sub(r"\d+\.\d+ seconds", "<T> seconds", text)
+    # floats com todos os dígitos variam na última casa entre ambientes: 6 casas, como rounded(),
+    # e o padding do rich em volta do número vira um espaço, porque a largura dele também varia
+    text = LONG_FLOAT.sub(_round_float, text)
     return "\n".join(line.rstrip() for line in text.splitlines()).strip("\n") + "\n"
 
 

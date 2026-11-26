@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-26 02:46-0300\n"
+"POT-Creation-Date: 2026-11-26 11:45-0300\n"
 "PO-Revision-Date: 2026-11-22 03:37-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: pt_BR\n"
@@ -56,55 +56,54 @@ msgstr "> Erro: Medidas inesperadas de should_process_metrics"
 msgid "> Error: No metrics where found in the .msgram files from the type: {input_format}"
 msgstr "> Erro: Nenhuma métrica encontrada nos arquivos .msgram do tipo: {input_format}"
 
-#: src/cli/parsers.py:44
+#: src/cli/parsers.py:23 src/cli/parsers.py:161
+msgid "Path to the directory with the model configuration file (msgram.json)."
+msgstr "Caminho para o diretório com o arquivo de configuração do modelo (msgram.json)."
+
+#: src/cli/parsers.py:48
 #, python-brace-format
 msgid "{prog}: error: {message}"
 msgstr "{prog}: erro: {message}"
 
-#: src/cli/parsers.py:55
+#: src/cli/parsers.py:59
 msgid "Terminal contrast theme. Use auto, dark, or light."
 msgstr "Tema de contraste do terminal. Use auto, dark ou light."
 
-#: src/cli/parsers.py:62
+#: src/cli/parsers.py:66
 msgid "Command line interface for measuresoftgram"
 msgstr "Interface de linha de comando para o MeasureSoftGram"
 
-#: src/cli/parsers.py:63
+#: src/cli/parsers.py:67
 #, python-format
 msgid "Thanks for using %(prog)s!"
 msgstr "Obrigado por usar %(prog)s!"
 
-#: src/cli/parsers.py:68
+#: src/cli/parsers.py:72
 msgid "subcommands"
 msgstr "subcomandos"
 
-#: src/cli/parsers.py:70
+#: src/cli/parsers.py:74
 msgid "sub-command help"
 msgstr "ajuda do subcomando"
 
-#: src/cli/parsers.py:78
+#: src/cli/parsers.py:82
 msgid "Create a init file `.measuresoftgram` with your default organization, product and repositories"
 msgstr "Cria o arquivo de configuração inicial com organização, produto e repositórios padrão"
 
-#: src/cli/parsers.py:89 src/cli/parsers.py:136 src/cli/parsers.py:161
-#: src/cli/parsers.py:285
-msgid "Path to the directory with the model configuration file (msgram.json)."
-msgstr "Caminho para o diretório com o arquivo de configuração do modelo (msgram.json)."
-
-#: src/cli/parsers.py:98
+#: src/cli/parsers.py:100
 msgid "Run an end-to-end pipeline (init, extract, calculate) on an embedded sample dataset."
 msgstr "Executa um pipeline completo (init, extract, calculate) em um conjunto de dados de exemplo embutido."
 
-#: src/cli/parsers.py:108
+#: src/cli/parsers.py:110
 msgid "Path to the working directory where the demo results are written."
 msgstr "Caminho para o diretório de trabalho onde os resultados da demonstração serão gravados."
 
-#: src/cli/parsers.py:118
+#: src/cli/parsers.py:120
 #, python-brace-format
 msgid "The format of the calculate output (export) values are: {formats}"
 msgstr "O formato de saída (exportação) dos valores calculados é: {formats}"
 
-#: src/cli/parsers.py:126
+#: src/cli/parsers.py:128
 msgid "Listing configurations parameters."
 msgstr "Lista os parâmetros de configuração."
 
@@ -164,36 +163,36 @@ msgstr "Nome do repositório associado aos dados de eficiência de desempenho ex
 msgid "Calculates all entities"
 msgstr "Calcula todas as entidades"
 
-#: src/cli/parsers.py:295
+#: src/cli/parsers.py:293
 #, python-brace-format
 msgid "The format of the output (export) values are: {formats}"
 msgstr "O formato de saída (exportação) dos valores é: {formats}"
 
-#: src/cli/parsers.py:305
+#: src/cli/parsers.py:303
 msgid "Calculates the Frobenius norm of the difference between tensors RP and RD, which means the quantitative perception of the discrepancy between the planned and developed quality requirements in a release."
 msgstr "Calcula a norma de Frobenius da diferença entre os tensores RP e RD, representando a percepção quantitativa da discrepância entre os requisitos de qualidade planejados e desenvolvidos em uma release."
 
-#: src/cli/parsers.py:317
+#: src/cli/parsers.py:315
 msgid "path to the .json file with the planned/wished values for the quality characteristics of a release. quality requirements goals for a release."
 msgstr "Caminho para o arquivo .json com os valores planejados/desejados para as características de qualidade de uma release."
 
-#: src/cli/parsers.py:328
+#: src/cli/parsers.py:326
 msgid "path to the .json file with the model-calculated values for a release's quality characteristics observed/developed."
 msgstr "Caminho para o arquivo .json com os valores calculados pelo modelo para as características de qualidade observadas/desenvolvidas de uma release."
 
-#: src/cli/parsers.py:341
+#: src/cli/parsers.py:339
 msgid "Calculates and interprets the difference between the planned and developed quantitative perceptions of each quality characteristic, represented by the RP and RD tensors."
 msgstr "Calcula e interpreta a diferença entre as percepções quantitativas planejadas e desenvolvidas de cada característica de qualidade, representadas pelos tensores RP e RD."
 
-#: src/cli/parsers.py:353
+#: src/cli/parsers.py:351
 msgid "Path to the .json file with the model-calculated values for a release's quality characteristics observed/developed."
 msgstr "Caminho para o arquivo .json com os valores calculados pelo modelo para as características de qualidade observadas/desenvolvidas de uma release."
 
-#: src/cli/parsers.py:364
+#: src/cli/parsers.py:362
 msgid "Path to the .json file with the planned/wished values for the quality characteristics of a release. Quality requirements goals for a release."
 msgstr "Caminho para o arquivo .json com os valores planejados/desejados para as características de qualidade de uma release."
 
-#: src/cli/parsers.py:374
+#: src/cli/parsers.py:372
 msgid "The format of the output (export) values is tabular"
 msgstr "O formato de saída (exportação) dos valores é tabular"
 
@@ -211,42 +210,47 @@ msgstr "Falha ao decodificar o arquivo JSON: {error}\n"
 msgid "Failed to decode the JSON file: The values informed in the .json file {path} must be between 0 and 1.\n"
 msgstr "Falha ao decodificar o arquivo JSON: Os valores informados no arquivo .json {path} devem estar entre 0 e 1.\n"
 
-#: src/cli/commands/cmd_calculate.py:47
+#: src/cli/commands/cmd_calculate.py:52
 #, python-brace-format
 msgid "Error reading msgram.json config file in {path}: {error}\n"
 msgstr "Erro ao ler o arquivo de configuração msgram.json em {path}: {error}\n"
 
-#: src/cli/commands/cmd_calculate.py:66
+#: src/cli/commands/cmd_calculate.py:75
+#, python-brace-format
+msgid "No {source} metrics in the extracted files. These configured measures were not calculated: {measures}"
+msgstr "Nenhuma métrica de {source} nos arquivos extraídos. Estas medidas configuradas não foram calculadas: {measures}"
+
+#: src/cli/commands/cmd_calculate.py:94
 #, python-brace-format
 msgid "No metrics files found in {path}"
 msgstr "Nenhum arquivo de métricas encontrado em {path}"
 
-#: src/cli/commands/cmd_calculate.py:72
+#: src/cli/commands/cmd_calculate.py:99
 msgid "Calculating metrics: "
 msgstr "Calculando métricas: "
 
-#: src/cli/commands/cmd_calculate.py:97
+#: src/cli/commands/cmd_calculate.py:113
 #, python-brace-format
 msgid "Error calculating {path}: {error}\n"
 msgstr "Erro ao calcular {path}: {error}\n"
 
-#: src/cli/commands/cmd_calculate.py:114 src/cli/commands/cmd_demo.py:84
-#: src/cli/commands/cmd_diff.py:121 src/cli/commands/cmd_extract.py:162
-#: src/cli/commands/cmd_init.py:31 src/cli/commands/cmd_list.py:121
+#: src/cli/commands/cmd_calculate.py:156 src/cli/commands/cmd_demo.py:64
+#: src/cli/commands/cmd_diff.py:121 src/cli/commands/cmd_extract.py:173
+#: src/cli/commands/cmd_init.py:31 src/cli/commands/cmd_list.py:145
 #: src/cli/commands/cmd_norm_diff.py:66
 #, python-brace-format
 msgid "KeyError: args[{error}] - non-existent parameters"
 msgstr "KeyError: args[{error}] - parâmetros inexistentes"
 
-#: src/cli/commands/cmd_calculate.py:119
+#: src/cli/commands/cmd_calculate.py:161
 msgid "Calculate"
 msgstr "Calcular"
 
-#: src/cli/commands/cmd_calculate.py:120 src/cli/commands/cmd_diff.py:127
+#: src/cli/commands/cmd_calculate.py:162 src/cli/commands/cmd_diff.py:127
 msgid "> Reading config file:"
 msgstr "> Lendo arquivo de configuração:"
 
-#: src/cli/commands/cmd_calculate.py:124
+#: src/cli/commands/cmd_calculate.py:172
 msgid ""
 "\n"
 "> Reading extracted files:"
@@ -254,7 +258,16 @@ msgstr ""
 "\n"
 "> Lendo arquivos extraídos:"
 
-#: src/cli/commands/cmd_calculate.py:133
+#: src/cli/commands/cmd_calculate.py:183
+#, python-brace-format
+msgid ""
+"\n"
+"Calculations finished with {count} warning(s), see above."
+msgstr ""
+"\n"
+"Cálculos concluídos com {count} aviso(s), veja acima."
+
+#: src/cli/commands/cmd_calculate.py:188
 msgid ""
 "\n"
 "All calculations performed successfully!"
@@ -262,11 +275,11 @@ msgstr ""
 "\n"
 "Todos os cálculos foram realizados com sucesso!"
 
-#: src/cli/commands/cmd_calculate.py:139 src/cli/commands/cmd_diff.py:148
+#: src/cli/commands/cmd_calculate.py:194 src/cli/commands/cmd_diff.py:148
 msgid "Done"
 msgstr "Concluído"
 
-#: src/cli/commands/cmd_calculate.py:141 src/cli/commands/cmd_diff.py:150
+#: src/cli/commands/cmd_calculate.py:196 src/cli/commands/cmd_diff.py:150
 msgid ""
 "> See the publications for more information: \n"
 "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
@@ -276,20 +289,25 @@ msgstr ""
 "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
 "https://dl.acm.org/doi/10.1145/3422392.3422450 \n"
 
-#: src/cli/commands/cmd_calculate.py:192
+#: src/cli/commands/cmd_calculate.py:206
+#, python-brace-format
+msgid "{file} does not record the component types (FIL, UTS, TRK). Run msgram extract again to calculate the per-file measures like the Service does."
+msgstr "{file} não registra os tipos de componente (FIL, UTS, TRK). Rode o msgram extract de novo para calcular as medidas por arquivo como o Service."
+
+#: src/cli/commands/cmd_calculate.py:255
 #, python-brace-format
 msgid "WARNING: No extracted file read so no {output_format} was generated!"
 msgstr "AVISO: Nenhum arquivo extraído foi lido, então nenhum {output_format} foi gerado!"
 
-#: src/cli/commands/cmd_calculate.py:207 src/cli/commands/cmd_diff.py:161
+#: src/cli/commands/cmd_calculate.py:270 src/cli/commands/cmd_diff.py:161
 msgid "Exporting CSV..."
 msgstr "Exportando CSV..."
 
-#: src/cli/commands/cmd_calculate.py:211 src/cli/commands/cmd_diff.py:165
+#: src/cli/commands/cmd_calculate.py:274 src/cli/commands/cmd_diff.py:165
 msgid "Exporting JSON..."
 msgstr "Exportando JSON..."
 
-#: src/cli/commands/cmd_calculate.py:281
+#: src/cli/commands/cmd_calculate.py:344
 msgid ""
 "Overview - tree:\n"
 "\n"
@@ -297,41 +315,36 @@ msgstr ""
 "Visão geral - árvore:\n"
 "\n"
 
-#: src/cli/commands/cmd_calculate.py:312 src/cli/commands/cmd_diff.py:191
+#: src/cli/commands/cmd_calculate.py:375 src/cli/commands/cmd_diff.py:191
 #, python-brace-format
 msgid "Success: {filename} exported as JSON"
 msgstr "Sucesso: {filename} exportado como JSON"
 
-#: src/cli/commands/cmd_calculate.py:342 src/cli/commands/cmd_diff.py:224
+#: src/cli/commands/cmd_calculate.py:405 src/cli/commands/cmd_diff.py:224
 #, python-brace-format
 msgid "Success: {filename} exported as CSV"
 msgstr "Sucesso: {filename} exportado como CSV"
 
-#: src/cli/commands/cmd_demo.py:97
+#: src/cli/commands/cmd_demo.py:77
 msgid "Running an end-to-end pipeline on a sample dataset:"
 msgstr "Executando um pipeline completo em um conjunto de dados de exemplo:"
 
-#: src/cli/commands/cmd_demo.py:98
+#: src/cli/commands/cmd_demo.py:78
 #, python-brace-format
 msgid "> Working directory: {path}"
 msgstr "> Diretório de trabalho: {path}"
 
-#: src/cli/commands/cmd_demo.py:99
+#: src/cli/commands/cmd_demo.py:79
 #, python-brace-format
 msgid "> Sample dataset:    {path}"
 msgstr "> Conjunto de dados:     {path}"
 
-#: src/cli/commands/cmd_demo.py:108
+#: src/cli/commands/cmd_demo.py:88
 #, python-brace-format
 msgid "> Using existing config file: {path}"
 msgstr "> Usando arquivo de configuração existente: {path}"
 
-#: src/cli/commands/cmd_demo.py:116
-#, python-brace-format
-msgid "The sample dataset only has SonarQube metrics. These configured measures need GitHub data and will not be calculated: {measures}"
-msgstr "O conjunto de dados de exemplo possui apenas métricas do SonarQube. Estas medidas configuradas precisam de dados do GitHub e não serão calculadas: {measures}"
-
-#: src/cli/commands/cmd_demo.py:141
+#: src/cli/commands/cmd_demo.py:115
 msgid ""
 "\n"
 "Demo finished successfully!"
@@ -339,11 +352,11 @@ msgstr ""
 "\n"
 "Demonstração concluída com sucesso!"
 
-#: src/cli/commands/cmd_demo.py:143
+#: src/cli/commands/cmd_demo.py:117
 msgid "Demo done"
 msgstr "Demonstração concluída"
 
-#: src/cli/commands/cmd_demo.py:145
+#: src/cli/commands/cmd_demo.py:119
 #, python-brace-format
 msgid ""
 "> The end-to-end pipeline (init -> extract -> calculate) ran on the embedded sample dataset.\n"
@@ -393,21 +406,21 @@ msgstr ""
 "\n"
 "Cálculo de diff realizado com sucesso!"
 
-#: src/cli/commands/cmd_extract.py:39
+#: src/cli/commands/cmd_extract.py:40
 msgid "Could not extract creation date from file. Was the file name to contain a date in the format dd-mm-yyyy-hh-mm"
 msgstr "Não foi possível extrair a data de criação do arquivo. O nome do arquivo deve conter uma data no formato dd-mm-aaaa-hh-mm"
 
-#: src/cli/commands/cmd_extract.py:43
+#: src/cli/commands/cmd_extract.py:44
 #, python-brace-format
 msgid "filename: {filename}"
 msgstr "arquivo: {filename}"
 
-#: src/cli/commands/cmd_extract.py:66
+#: src/cli/commands/cmd_extract.py:67
 msgid "Error: Range of dates for filter must be in format 'dd/mm/yyyy-dd/mm/yyyy'"
 msgstr "Erro: O intervalo de datas para filtro deve estar no formato 'dd/mm/aaaa-dd/mm/aaaa'"
 
-#: src/cli/commands/cmd_extract.py:76 src/cli/commands/cmd_extract.py:120
-#: src/cli/commands/cmd_extract.py:223
+#: src/cli/commands/cmd_extract.py:77 src/cli/commands/cmd_extract.py:130
+#: src/cli/commands/cmd_extract.py:234
 #, python-brace-format
 msgid ""
 "\n"
@@ -416,21 +429,21 @@ msgstr ""
 "\n"
 "> Extrair e salvar métricas [{origin}]:"
 
-#: src/cli/commands/cmd_extract.py:86
+#: src/cli/commands/cmd_extract.py:87
 #, python-brace-format
 msgid "Error: could not reach the GitHub API, no metrics were saved ({error})"
 msgstr "Erro: não foi possível acessar a API do GitHub, nenhuma métrica foi salva ({error})"
 
-#: src/cli/commands/cmd_extract.py:111
+#: src/cli/commands/cmd_extract.py:121
 #, python-brace-format
 msgid "No JSON files found in the specified data_path: {path}\n"
 msgstr "Nenhum arquivo JSON encontrado no caminho informado: {path}\n"
 
-#: src/cli/commands/cmd_extract.py:123
+#: src/cli/commands/cmd_extract.py:133
 msgid "Extracting files: "
 msgstr "Extraindo arquivos: "
 
-#: src/cli/commands/cmd_extract.py:141
+#: src/cli/commands/cmd_extract.py:152
 #, python-brace-format
 msgid ""
 "\n"
@@ -441,36 +454,36 @@ msgstr ""
 "\n"
 "Métricas extraídas com sucesso [{valid}/{total} arquivos - {elapsed:0.2f} segundos]!"
 
-#: src/cli/commands/cmd_extract.py:174
+#: src/cli/commands/cmd_extract.py:185
 msgid "Error: Some pe_ parameters for extracting the performance efficiency data are missing"
 msgstr "Erro: Alguns parâmetros pe_ para extração dos dados de eficiência de desempenho estão faltando"
 
-#: src/cli/commands/cmd_extract.py:186
+#: src/cli/commands/cmd_extract.py:197
 msgid "It is necessary to pass sonar_path, github_repository or the pe_ parameters"
 msgstr "É necessário informar sonar_path, gh_repository ou os parâmetros pe_"
 
-#: src/cli/commands/cmd_extract.py:192
+#: src/cli/commands/cmd_extract.py:203
 msgid "Extract metrics"
 msgstr "Extrair métricas"
 
-#: src/cli/commands/cmd_extract.py:200
+#: src/cli/commands/cmd_extract.py:211
 #, python-brace-format
 msgid "FileNotFoundError: extract directory '{path}' does not exists"
 msgstr "FileNotFoundError: o diretório de extração '{path}' não existe"
 
-#: src/cli/commands/cmd_extract.py:216
+#: src/cli/commands/cmd_extract.py:227
 msgid "Error: gh_repository must be specified in order to use gh_ parameters"
 msgstr "Erro: gh_repository deve ser especificado para usar os parâmetros gh_"
 
-#: src/cli/commands/cmd_extract.py:242
+#: src/cli/commands/cmd_extract.py:253
 msgid "> Run msgram calculate all -ep 'extracted_path' -cp 'extracted_path' -o 'input_origin'"
 msgstr "> Execute msgram calculate all -ep 'extracted_path' -cp 'extracted_path' -o 'input_origin'"
 
-#: src/cli/commands/cmd_extract.py:248 src/cli/jsonReader/jsonReader.py:59
+#: src/cli/commands/cmd_extract.py:259 src/cli/jsonReader/jsonReader.py:59
 msgid "Reading:"
 msgstr "Lendo:"
 
-#: src/cli/commands/cmd_extract.py:249
+#: src/cli/commands/cmd_extract.py:260
 msgid "Save   :"
 msgstr "Salvar :"
 
@@ -483,7 +496,7 @@ msgstr "Inicializando arquivo de configuração:"
 msgid "Created dir: {path}"
 msgstr "Diretório criado: {path}"
 
-#: src/cli/commands/cmd_init.py:49 src/cli/commands/cmd_list.py:136
+#: src/cli/commands/cmd_init.py:49 src/cli/commands/cmd_list.py:160
 #, python-brace-format
 msgid "MSGram config file '{file}' exists already!"
 msgstr "O arquivo de configuração do MSGram '{file}' já existe!"
@@ -515,81 +528,81 @@ msgstr ""
 "> Execute msgram extract -o <fonte de informação> -dp data_path -ep extract_path,\n"
 "  para extrair as métricas suportadas!"
 
-#: src/cli/commands/cmd_list.py:47
-msgid "Characteristic:"
-msgstr "Característica:"
-
-#: src/cli/commands/cmd_list.py:52 src/cli/commands/cmd_list.py:69
-msgid "Weight:"
-msgstr "Peso:"
-
-#: src/cli/commands/cmd_list.py:56
-msgid "Sub-characteristic(s):"
-msgstr "Sub-característica(s):"
-
-#: src/cli/commands/cmd_list.py:63
-msgid "Measure(s):"
-msgstr "Medida(s):"
-
-#: src/cli/commands/cmd_list.py:75
+#: src/cli/commands/cmd_list.py:46
 msgid "Metric(s):"
 msgstr "Métrica(s):"
 
-#: src/cli/commands/cmd_list.py:84
+#: src/cli/commands/cmd_list.py:50
 #, python-brace-format
 msgid "Min = {min} and Max = {max}"
 msgstr "Min = {min} e Max = {max}"
 
-#: src/cli/commands/cmd_list.py:90
+#: src/cli/commands/cmd_list.py:56
 #, python-brace-format
 msgid "Reference values: {range}"
 msgstr "Valores de referência: {range}"
 
-#: src/cli/commands/cmd_list.py:93
+#: src/cli/commands/cmd_list.py:58
 msgid "End-Metric(s)"
 msgstr "Fim-Métrica(s)"
 
-#: src/cli/commands/cmd_list.py:95
+#: src/cli/commands/cmd_list.py:65
+msgid "Measure(s):"
+msgstr "Medida(s):"
+
+#: src/cli/commands/cmd_list.py:67 src/cli/commands/cmd_list.py:107
+msgid "Weight:"
+msgstr "Peso:"
+
+#: src/cli/commands/cmd_list.py:70
 msgid "End-Measure(s)"
 msgstr "Fim-Medida(s)"
 
-#: src/cli/commands/cmd_list.py:96
+#: src/cli/commands/cmd_list.py:78
 msgid "End-SubCharacteristic"
 msgstr "Fim-SubCaracterística"
 
-#: src/cli/commands/cmd_list.py:97
+#: src/cli/commands/cmd_list.py:85
+msgid "Sub-characteristic(s):"
+msgstr "Sub-característica(s):"
+
+#: src/cli/commands/cmd_list.py:102
+msgid "Characteristic:"
+msgstr "Característica:"
+
+#: src/cli/commands/cmd_list.py:121
 msgid "End-Characteristic"
 msgstr "Fim-Característica"
 
-#: src/cli/commands/cmd_list.py:110
+#: src/cli/commands/cmd_list.py:134
 msgid "The user-provided file will be used: "
 msgstr "Será usado arquivo informado pelo usuário: "
 
-#: src/cli/commands/cmd_list.py:115
+#: src/cli/commands/cmd_list.py:139
 msgid "No configuration file path was given, the default path will be used."
 msgstr "Não foi informado caminho do arquivo de configuração, será usado caminho padrão."
 
-#: src/cli/commands/cmd_list.py:125
+#: src/cli/commands/cmd_list.py:149
 msgid "Listing Configuration Parameters"
 msgstr "Listando parâmetros de configuração"
 
-#: src/cli/commands/cmd_list.py:128
+#: src/cli/commands/cmd_list.py:152
 msgid "The configuration file was not found. \n"
 msgstr "O arquivo de configuração não foi encontrado. \n"
 
-#: src/cli/commands/cmd_list.py:129
+#: src/cli/commands/cmd_list.py:153
 msgid "Run 'msgram init' in the desired project to create it.\n"
 msgstr "Execute o comando 'msgram init' no projeto desejado para criá-lo.\n"
 
-#: src/cli/commands/cmd_list.py:131
+#: src/cli/commands/cmd_list.py:155
 msgid "Or use 'msgram init --config_path <path>' to give the path to the file."
 msgstr "Ou use 'msgram init --config_path <path>' para informar o caminho até o arquivo."
 
-#: src/cli/commands/cmd_list.py:148
+#: src/cli/commands/cmd_list.py:172
 msgid "To set the weights by pairwise comparison, use: msgram weights"
 msgstr "Para definir os pesos por comparação, use: msgram weights"
 
-#: src/cli/commands/cmd_list.py:149
+#: src/cli/commands/cmd_list.py:173
 msgid "To set the weights manually, use: `vim .msgram/msgram.json`"
 msgstr "Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`"
 
@@ -813,7 +826,7 @@ msgstr "Erro ao calcular {filename}: Falha ao decodificar o arquivo JSON.\n"
 msgid "Error  : {error}\n"
 msgstr "Erro   : {error}\n"
 
-#: src/cli/resources/measure.py:122
+#: src/cli/resources/measure.py:185
 #, python-brace-format
 msgid "Measure '{measure}' could not be calculated. Missing metrics: {metrics}"
 msgstr "Não foi possível calcular a medida '{measure}'. Métricas ausentes: {metrics}"
@@ -839,4 +852,27 @@ msgstr "medidas"
 #, python-brace-format
 msgid "Entities outside the group {path}: {entities}"
 msgstr "Entidades fora do grupo {path}: {entities}"
+
+#: src/cli/resources/weights.py:39
+msgid "missing"
+msgstr "ausente"
+
+#: src/cli/resources/weights.py:64
+#, python-brace-format
+msgid "{group}: the weight of {entity} is {value} (expected a number between {min} and {max})"
+msgstr "{group}: o peso de {entity} é {value} (esperado um número entre {min} e {max})"
+
+#: src/cli/resources/weights.py:80
+#, python-brace-format
+msgid "{group}: the sum is {total} (expected {expected})"
+msgstr "{group}: a soma é {total} (esperado {expected})"
+
+#: src/cli/resources/weights.py:92
+#, python-brace-format
+msgid "Invalid weights in {file}"
+msgstr "Pesos inválidos em {file}"
+
+#: src/cli/resources/weights.py:94
+msgid "  Fix the file or use: msgram weights"
+msgstr "  Corrija o arquivo ou use: msgram weights"
 

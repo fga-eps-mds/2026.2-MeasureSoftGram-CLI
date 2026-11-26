@@ -3,7 +3,7 @@
   list([
     dict({
       'characteristic': 'maintainability',
-      'developed': 0.764928,
+      'developed': 0.762885,
       'diff': 0.0,
       'planned': '0.7',
       'repository': 'fga-eps-mds-2026.2-MeasureSoftGram-CLI',
@@ -11,7 +11,7 @@
     }),
     dict({
       'characteristic': 'reliability',
-      'developed': 0.9404,
+      'developed': 0.940506,
       'diff': 0.0,
       'planned': '0.9',
       'repository': 'fga-eps-mds-2026.2-MeasureSoftGram-CLI',
@@ -20,7 +20,7 @@
   ])
 # ---
 # name: test_diff_and_norm_diff_against_planned.1
-  0.06707
+  0.065605
 # ---
 # name: test_list_shows_config_created_by_init
   '''
@@ -145,19 +145,19 @@
 # ---
 # name: test_sonar_calculate_csv
   dict({
-    'commented_file_density': 0.05075,
+    'commented_file_density': 0.053421,
     'duplication_absense': 1.0,
-    'maintainability': 0.764928,
-    'modifiability': 0.764928,
-    'non_complex_file_density': 0.586299,
+    'maintainability': 0.762885,
+    'modifiability': 0.762885,
+    'non_complex_file_density': 0.579778,
     'passed_tests': 1.0,
-    'reliability': 0.9404,
+    'reliability': 0.940506,
     'repository': 'fga-eps-mds-2026.2-MeasureSoftGram-CLI',
-    'technical_debt_ratio': 0.997065,
-    'test_builds': 0.999348,
-    'test_coverage': 0.817125,
-    'testing_status': 0.9404,
-    'tsqmi': 0.859767,
+    'technical_debt_ratio': 0.994474,
+    'test_builds': 0.999327,
+    'test_coverage': 0.8175,
+    'testing_status': 0.940506,
+    'tsqmi': 0.858946,
     'version': '25-10-2026-17-57',
   })
 # ---
@@ -165,7 +165,7 @@
   '''
                                                ╭─────── TSQMI Score ────────╮
                                                │                            │
-                                               │     0.8597670967866401     │
+                                               │ 0.858946 │
                                                │                            │
                                                ╰────────────────────────────╯
   
@@ -174,20 +174,20 @@
   ╭───────────────────────┬─────────────────────────╮               ╭────────────────────────┬────────────────────────╮
   │ characteristics       │ values                  │               │ subcharacteristics     │ values                 │
   ├───────────────────────┼─────────────────────────┤               ├────────────────────────┼────────────────────────┤
-  │ reliability           │ 0.9404004808199908      │               │ testing_status         │ 0.940400480819991      │
-  │ maintainability       │ 0.7649283484621858      │               │ modifiability          │ 0.7649283484621858     │
+  │ reliability           │ 0.940506 │               │ testing_status         │ 0.940506 │
+  │ maintainability       │ 0.762885 │               │ modifiability          │ 0.762885 │
   ╰───────────────────────┴─────────────────────────╯               ╰────────────────────────┴────────────────────────╯
                        measures
   ╭──────────────────────────┬──────────────────────╮
   │ measures                 │ values               │
   ├──────────────────────────┼──────────────────────┤
   │ passed_tests             │ 1.0                  │
-  │ test_builds              │ 0.999347675850905    │
-  │ test_coverage            │ 0.8171250000000001   │
-  │ non_complex_file_density │ 0.5862993287500676   │
-  │ commented_file_density   │ 0.050749999999999997 │
+  │ test_builds              │ 0.999327 │
+  │ test_coverage            │ 0.8175               │
+  │ non_complex_file_density │ 0.579778 │
+  │ commented_file_density   │ 0.053421 │
   │ duplication_absense      │ 1.0                  │
-  │ technical_debt_ratio     │ 0.9970652173913043   │
+  │ technical_debt_ratio     │ 0.994474 │
   ╰──────────────────────────┴──────────────────────╯
   
   
@@ -211,18 +211,18 @@
   ℹ Overview - tree:
   
   
-  ℹ tsqmi: 0.8597670967866401
-  ℹ ├── reliability: 0.9404004808199908
-  ℹ │   └── testing_status 0.940400480819991
+  ℹ tsqmi: 0.858946
+  ℹ ├── reliability: 0.940506
+  ℹ │   └── testing_status 0.940506
   ℹ │       ├── passed_tests 1.0
-  ℹ │       ├── test_builds 0.999347675850905
-  ℹ │       └── test_coverage 0.8171250000000001
-  ℹ └── maintainability: 0.7649283484621858
-  ℹ     └── modifiability 0.7649283484621858
-  ℹ         ├── non_complex_file_density 0.5862993287500676
-  ℹ         ├── commented_file_density 0.050749999999999997
+  ℹ │       ├── test_builds 0.999327
+  ℹ │       └── test_coverage 0.8175
+  ℹ └── maintainability: 0.762885
+  ℹ     └── modifiability 0.762885
+  ℹ         ├── non_complex_file_density 0.579778
+  ℹ         ├── commented_file_density 0.053421
   ℹ         ├── duplication_absense 1.0
-  ℹ         └── technical_debt_ratio 0.9970652173913043
+  ℹ         └── technical_debt_ratio 0.994474
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   
   

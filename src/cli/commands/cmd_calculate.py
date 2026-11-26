@@ -12,8 +12,13 @@ from staticfiles import DEFAULT_PRE_CONFIG as pre_config
 from src.cli.i18n import _
 from src.cli.jsonReader import open_json_file, read_multiple_files
 from src.cli.resources.characteristic import calculate_characteristics
-from src.cli.resources.measure import calculate_measures
+from src.cli.resources.measure import (
+    calculate_measures,
+    get_measures_without_source_data,
+    is_legacy_sonar_extraction,
+)
 from src.cli.resources.tsqmi import calculate_tsqmi
+from src.cli.resources.weights import print_weight_errors, validate_weights
 from src.cli.resources.subcharacteristic import calculate_subcharacteristics
 from src.cli.utils import (
     clear_console,
@@ -56,49 +61,86 @@ def read_config_file(config_path):
 # calculate_github
 
 
-def calculate_metrics(extracted_path, config):
+def warn_measures_without_source_data(skipped_by_file, warnings):
+    """Avisa uma vez as medidas que ficaram sem dados da fonte em todos os arquivos."""
+    if not skipped_by_file:
+        return
+    common = set(skipped_by_file[0]).intersection(*skipped_by_file[1:])
+    by_source = {}
+    for measure_key, source_name in skipped_by_file[0].items():
+        if measure_key in common:
+            by_source.setdefault(source_name, []).append(measure_key)
+    for source_name, measure_keys in by_source.items():
+        message = _(
+            "No {source} metrics in the extracted files. These configured "
+            "measures were not calculated: {measures}"
+        ).format(source=source_name, measures=", ".join(measure_keys))
+        print_warn(message)
+        warnings.append(message)
+
+
+def _calculate_file(json_data, file_name, config, warnings, skipped_by_file):
+    if file_name.startswith("perf-eff_"):
+        return calculate_perf_eff_measures(file_name[len("perf-eff_") :], json_data)
+    if file_name.startswith("github_"):
+        file_name = file_name[len("github_") :]
+    skipped_by_file.append(get_measures_without_source_data(json_data, config))
+    return calculate_all(json_data, file_name, config, warnings)
+
+
+def _calculate_directory(extracted_path, config, warnings, skipped_by_file):
+    files = list(extracted_path.glob("*.metrics"))
+    if not files:
+        print_warn(_("No metrics files found in {path}").format(path=extracted_path))
+        return [], False
+
     data_calculated = []
+    with make_progress_bar() as progress_bar:
+        task_calc = progress_bar.add_task(_("Calculating metrics: "), total=len(files))
+        for file, file_name in read_multiple_files(extracted_path, "metrics"):
+            data_calculated.append(
+                _calculate_file(file, file_name, config, warnings, skipped_by_file)
+            )
+            progress_bar.advance(task_calc)
+    return data_calculated, True
+
+
+def _calculate_single_file(extracted_path, config, warnings, skipped_by_file):
+    try:
+        json_data = open_json_file(extracted_path)
+    except exceptions.MeasureSoftGramCLIException as e:
+        print_error(
+            _("Error calculating {path}: {error}\n").format(
+                path=extracted_path, error=e
+            )
+        )
+        return [], False
+    return [
+        _calculate_file(
+            json_data, extracted_path.name, config, warnings, skipped_by_file
+        )
+    ], True
+
+
+def calculate_metrics(extracted_path, config):
+    """Calcula os arquivos extraídos. Retorna (resultados, sucesso, avisos)."""
+    warnings = []
+    skipped_by_file = []
 
     if not extracted_path.is_file():
-        files = list(extracted_path.glob("*.metrics"))
-        if not files:
-            print_warn(
-                _("No metrics files found in {path}").format(path=extracted_path)
-            )
-            return data_calculated, False
-
-        with make_progress_bar() as progress_bar:
-            task_calc = progress_bar.add_task(
-                _("Calculating metrics: "), total=len(files)
-            )
-            for file, file_name in read_multiple_files(extracted_path, "metrics"):
-                if file_name.startswith("perf-eff_"):
-                    file_name = file_name[len("perf-eff_") :]
-                    result = calculate_perf_eff_measures(file_name, file)
-                    data_calculated.append(result)
-                else:
-                    if file_name.startswith("github_"):
-                        file_name = file_name[len("github_") :]
-                    result = calculate_all(file, file_name, config)
-                    data_calculated.append(result)
-                progress_bar.advance(task_calc)
-
-        return data_calculated, True
+        data_calculated, success = _calculate_directory(
+            extracted_path, config, warnings, skipped_by_file
+        )
     else:
-        try:
-            file_name = extracted_path.name
-            if extracted_path.name.startswith("github_"):
-                file_name = file_name[len("github_") :]
-            result = calculate_all(open_json_file(extracted_path), file_name, config)
-            data_calculated.append(result)
-            return data_calculated, True
-        except exceptions.MeasureSoftGramCLIException as e:
-            print_error(
-                _("Error calculating {path}: {error}\n").format(
-                    path=extracted_path, error=e
-                )
-            )
-            return data_calculated, False
+        data_calculated, success = _calculate_single_file(
+            extracted_path, config, warnings, skipped_by_file
+        )
+
+    if not success:
+        return data_calculated, False, warnings
+
+    warn_measures_without_source_data(skipped_by_file, warnings)
+    return data_calculated, True, warnings
 
 
 def command_calculate(args):
@@ -120,17 +162,30 @@ def command_calculate(args):
     print_info(_("> Reading config file:"))
 
     config = read_config_file(config_path)
+    weight_errors = validate_weights(config)
+    if weight_errors:
+        # DOC#302: pesos inválidos impedem o cálculo
+        print_weight_errors(weight_errors, config_path / FILE_CONFIG)
+        print_rule()
+        sys.exit(1)
 
     print_info(_("\n> Reading extracted files:"))
 
-    data_calculated, success = calculate_metrics(extracted_path, config)
+    data_calculated, success, warnings = calculate_metrics(extracted_path, config)
 
     if not success:
         # nada foi calculado (sem .metrics ou arquivo inválido); o motivo já foi impresso
         print_rule()
         sys.exit(1)
 
-    print_success(_("\nAll calculations performed successfully!"))
+    if warnings:
+        print_warn(
+            _("\nCalculations finished with {count} warning(s), see above.").format(
+                count=len(warnings)
+            )
+        )
+    else:
+        print_success(_("\nAll calculations performed successfully!"))
 
     show_results(output_format, data_calculated, config_path, config)
     print_rule()
@@ -145,8 +200,16 @@ def command_calculate(args):
     )
 
 
-def calculate_all(json_data, file_name, config):
-    data_measures, _unused = calculate_measures(json_data, config)
+def calculate_all(json_data, file_name, config, warnings: list | None = None):
+    if is_legacy_sonar_extraction(json_data):
+        message = _(
+            "{file} does not record the component types (FIL, UTS, TRK). "
+            "Run msgram extract again to calculate the per-file measures like the Service does."
+        ).format(file=file_name)
+        print_warn(message)
+        if warnings is not None:
+            warnings.append(message)
+    data_measures, _unused = calculate_measures(json_data, config, warnings)
     data_subcharacteristics, _unused = calculate_subcharacteristics(
         config, data_measures["measures"]
     )
