@@ -92,7 +92,7 @@ def describe_answer(answer) -> str:
 
 
 def describe_suggestion(answer) -> str:
-    _, _, preferred, intensity = answer
+    _first, _second, preferred, intensity = answer
     if preferred is None:
         return "igualmente importantes"
     return f"{preferred} é {SAATY_PHRASES[intensity]}"

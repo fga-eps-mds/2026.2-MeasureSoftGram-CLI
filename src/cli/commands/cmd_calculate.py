@@ -146,16 +146,16 @@ def command_calculate(args):
 
 
 def calculate_all(json_data, file_name, config):
-    data_measures, _ = calculate_measures(json_data, config)
-    data_subcharacteristics, _ = calculate_subcharacteristics(
+    data_measures, _unused = calculate_measures(json_data, config)
+    data_subcharacteristics, _unused = calculate_subcharacteristics(
         config, data_measures["measures"]
     )
-    data_characteristics, _ = (
+    data_characteristics, _unused = (
         calculate_characteristics(config, data_subcharacteristics["subcharacteristics"])
         if data_subcharacteristics["subcharacteristics"]
         else ([], [])
     )
-    data_tsqmi, _ = (
+    data_tsqmi, _unused = (
         calculate_tsqmi(config, data_characteristics["characteristics"])
         if data_characteristics
         else ([], [])
