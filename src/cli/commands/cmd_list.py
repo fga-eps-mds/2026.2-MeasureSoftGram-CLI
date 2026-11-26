@@ -1,3 +1,4 @@
+from src.cli.i18n import _
 from src.cli.resources.weights import print_weight_errors, validate_weights
 from src.cli.utils import (
     clear_console,
@@ -42,28 +43,31 @@ def _format_measure_metrics(measure, indent, main_color, success_color):
     measure_key = measure.get("key")
     metrics = MEASURE_TO_METRIC.get(measure_key, [])
 
-    lines = [f"{main_color}{indent}{indent}│  Métrica(s):"]
+    lines = [f"{main_color}{indent}{indent}│  " + _("Metric(s):")]
     min_max = ""
     for metric in metrics:
         lines.append(f"{main_color}{indent}{indent}│  └─{success_color}{metric}")
-        min_max = (
-            f"Min = {success_color}{min_threshold} {main_color}"
-            f"e Max = {success_color}{max_threshold}"
+        min_max = _("Min = {min} and Max = {max}").format(
+            min=f"{success_color}{min_threshold}{main_color}",
+            max=f"{success_color}{max_threshold}",
         )
-    lines.append(f"{main_color}{indent}{indent}│  │ Valores de referência: {min_max}")
-    lines.append(f"{main_color}{indent}{indent}│  Fim-Métrica(s)")
+    lines.append(
+        f"{main_color}{indent}{indent}│  │ "
+        + _("Reference values: {range}").format(range=min_max)
+    )
+    lines.append(f"{main_color}{indent}{indent}│  " + _("End-Metric(s)"))
     return lines
 
 
 def _format_single_measure(measure, indent, main_color, success_color):
     measure_key = measure.get("key")
     lines = [
-        f"{main_color}{indent}│  Medida(s):",
+        f"{main_color}{indent}│  " + _("Measure(s):"),
         f"{main_color}{indent}{indent}│  {success_color}{measure_key}",
-        f"{main_color}{indent}{indent}│  Peso: {success_color}{measure['weight']}%",
+        f"{main_color}{indent}{indent}│  {_('Weight:')} {success_color}{measure['weight']}%",
     ]
     lines.extend(_format_measure_metrics(measure, indent, main_color, success_color))
-    lines.append(f"{main_color}{indent}│  Fim-Medida(s)")
+    lines.append(f"{main_color}{indent}│  " + _("End-Measure(s)"))
     return lines
 
 
@@ -71,14 +75,14 @@ def _format_measures(measures, indent, main_color, success_color):
     lines = []
     for measure in measures:
         lines.extend(_format_single_measure(measure, indent, main_color, success_color))
-    lines.append(f"{main_color}Fim-SubCaracterística")
+    lines.append(f"{main_color}" + _("End-SubCharacteristic"))
     return lines
 
 
 def _process_subcharacteristics(subcharacteristics, indent, main_color, stack):
     lines = []
     for subchar in subcharacteristics:
-        lines.append(f"{main_color}{indent}Sub-característica(s):")
+        lines.append(f"{main_color}{indent}" + _("Sub-characteristic(s):"))
         stack.append((subchar, f"{indent}│  "))  # Use the ASCII character │ (code 179)
     return lines
 
@@ -95,12 +99,12 @@ def print_json_tree(data):
         key = data.get("key")
 
         if is_top:
-            result.append(f"{main_color}\nCaracterística:")
+            result.append(f"{main_color}\n" + _("Characteristic:"))
             is_top = False
         result.append(f"{main_color}{indent}{success_color}{key}")
 
         weight = data.get("weight", 0)
-        result.append(f"{main_color}{indent}Peso: {success_color}{weight}%")
+        result.append(f"{main_color}{indent}{_('Weight:')} {success_color}{weight}%")
 
         if "subcharacteristics" in data:
             result.extend(
@@ -114,7 +118,7 @@ def print_json_tree(data):
                 _format_measures(data["measures"], indent, main_color, success_color)
             )
 
-    result.append(f"{main_color}Fim-Característica")
+    result.append(f"{main_color}" + _("End-Characteristic"))
 
     return "\n".join(result)
 
@@ -127,30 +131,34 @@ def command_list(args):
         config_path: Path = args["config_path"]
 
         if config_path != DEFAULT_CONFIG_PATH:
-            print_info("Será usado arquivo informado pelo usuário: ")
+            print_info(_("The user-provided file will be used: "))
             file_path = str(config_path) + "/msgram.json"
         else:
             print_info(
-                "Não foi informado caminho do arquivo de configuração, será usado caminho padrão."
+                _(
+                    "No configuration file path was given, the default path will be used."
+                )
             )
 
     except Exception as e:
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         exit(1)
 
-    print_rule("Listing Configuration Parameters")
+    print_rule(_("Listing Configuration Parameters"))
 
     if not (os.path.exists(file_path)):
-        print_info("O arquivo de configuração não foi encontrado. \n")
+        print_info(_("The configuration file was not found. \n"))
+        print_info(_("Run 'msgram init' in the desired project to create it.\n"))
         print_info(
-            "Execute o comando 'msgram init' no projeto desejado para criá-lo.\n"
-        )
-        print_info(
-            "Ou use 'msgram init --config_path <path>' para informar o caminho ate o arquivo."
+            _("Or use 'msgram init --config_path <path>' to give the path to the file.")
         )
         sys.exit(1)
 
-    print_info(f"MSGram config file '{FILE_CONFIG}' exists already!")
+    print_info(
+        _("MSGram config file '{file}' exists already!").format(file=FILE_CONFIG)
+    )
 
     f = open(file_path)
 
@@ -161,8 +169,8 @@ def command_list(args):
         print_info(output_string)
 
     console.line()
-    print_info("Para definir os pesos por comparação, use: msgram weights")
-    print_info("Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`")
+    print_info(_("To set the weights by pairwise comparison, use: msgram weights"))
+    print_info(_("To set the weights manually, use: `vim .msgram/msgram.json`"))
 
     weight_errors = validate_weights(data)
     if weight_errors:

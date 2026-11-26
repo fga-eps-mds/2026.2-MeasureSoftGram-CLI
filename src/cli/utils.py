@@ -15,6 +15,7 @@ from rich.text import Text
 from rich.theme import Theme
 
 from src.cli.exceptions import exceptions
+from src.cli.i18n import _
 
 logger = logging.getLogger("msgram")
 console = Console(highlight=False, soft_wrap=False)
@@ -319,12 +320,13 @@ def print_rule(title: str = "", text: str = "", style: str = ""):
     console.line()
 
 
-def print_panel(menssage: str, title: str = "Next steps"):
+def print_panel(menssage: str, title: str = ""):
+    panel_title = title or _("Next steps")
     console.line(2)
     console.print(
         Panel(
             menssage,
-            title=title,
+            title=panel_title,
             title_align="center",
             style=_style("main"),
             border_style=_style("accent"),
@@ -407,13 +409,15 @@ def validate_json_values(file, file_path):
                     f"The values informed in the .json file {file_path} must be between 0 and 1.\n"
                 )
         except exceptions.MeasureSoftGramCLIException as e:
-            print_error(f"Failed to decode the JSON file: {e}\n")
+            print_error(_("Failed to decode the JSON file: {error}\n").format(error=e))
             print_rule()
             exit(1)
         except TypeError:
             print_error(
-                f"Failed to decode the JSON file: The values informed in the .json"
-                f"file {file_path} must be between 0 and 1.\n"
+                _(
+                    "Failed to decode the JSON file: The values informed in the .json "
+                    "file {path} must be between 0 and 1.\n"
+                ).format(path=file_path)
             )
             print_rule()
             exit(1)

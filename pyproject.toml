@@ -44,11 +44,12 @@ msgram = "src.cli.cli:main"
 strict = true
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "setuptools", "wheel"]
+dev = ["pytest", "pytest-cov", "setuptools", "wheel", "babel"]
 
 [tool.setuptools.packages]
 find = {}
 
 [tool.setuptools.package-data]
+"src.cli" = ["locale/*/LC_MESSAGES/*.mo"]
 "src.cli.resources" = ["demo_data/*.json"]
 

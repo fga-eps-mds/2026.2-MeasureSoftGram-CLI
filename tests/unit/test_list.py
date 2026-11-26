@@ -10,6 +10,12 @@ from tests.unit.cli_output import normalize_cli_output
 
 import pytest
 
+
+@pytest.fixture(autouse=True)
+def _portuguese(monkeypatch):
+    monkeypatch.setenv("MSGRAM_LANG", "pt_BR")
+
+
 INIT_ARGS = {"config_path": ".testmsgram"}
 
 

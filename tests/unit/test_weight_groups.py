@@ -11,6 +11,11 @@ from src.cli.resources.weight_groups import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _portuguese(monkeypatch):
+    monkeypatch.setenv("MSGRAM_LANG", "pt_BR")
+
+
 @pytest.fixture
 def config():
     return copy.deepcopy(DEFAULT_PRE_CONFIG)

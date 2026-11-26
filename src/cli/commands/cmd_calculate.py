@@ -9,6 +9,7 @@ from anytree import Node, RenderTree
 
 from staticfiles import DEFAULT_PRE_CONFIG as pre_config
 
+from src.cli.i18n import _
 from src.cli.jsonReader import open_json_file, read_multiple_files
 from src.cli.resources.characteristic import calculate_characteristics
 from src.cli.resources.measure import (
@@ -47,7 +48,11 @@ def read_config_file(config_path):
     try:
         return open_json_file(config_path / FILE_CONFIG)
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error reading msgram.json config file in {config_path}: {e}\n")
+        print_error(
+            _("Error reading msgram.json config file in {path}: {error}\n").format(
+                path=config_path, error=e
+            )
+        )
         print_rule()
         exit(1)
 
@@ -66,10 +71,10 @@ def warn_measures_without_source_data(skipped_by_file, warnings):
         if measure_key in common:
             by_source.setdefault(source_name, []).append(measure_key)
     for source_name, measure_keys in by_source.items():
-        message = (
-            f"No {source_name} metrics in the extracted files. These configured "
-            f"measures were not calculated: {', '.join(measure_keys)}"
-        )
+        message = _(
+            "No {source} metrics in the extracted files. These configured "
+            "measures were not calculated: {measures}"
+        ).format(source=source_name, measures=", ".join(measure_keys))
         print_warn(message)
         warnings.append(message)
 
@@ -86,12 +91,12 @@ def _calculate_file(json_data, file_name, config, warnings, skipped_by_file):
 def _calculate_directory(extracted_path, config, warnings, skipped_by_file):
     files = list(extracted_path.glob("*.metrics"))
     if not files:
-        print_warn(f"No metrics files found in {extracted_path}")
+        print_warn(_("No metrics files found in {path}").format(path=extracted_path))
         return [], False
 
     data_calculated = []
     with make_progress_bar() as progress_bar:
-        task_calc = progress_bar.add_task("Calculating metrics: ", total=len(files))
+        task_calc = progress_bar.add_task(_("Calculating metrics: "), total=len(files))
         for file, file_name in read_multiple_files(extracted_path, "metrics"):
             data_calculated.append(
                 _calculate_file(file, file_name, config, warnings, skipped_by_file)
@@ -104,7 +109,11 @@ def _calculate_single_file(extracted_path, config, warnings, skipped_by_file):
     try:
         json_data = open_json_file(extracted_path)
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error calculating {extracted_path}: {e}\n")
+        print_error(
+            _("Error calculating {path}: {error}\n").format(
+                path=extracted_path, error=e
+            )
+        )
         return [], False
     return [
         _calculate_file(
@@ -143,12 +152,14 @@ def command_calculate(args):
 
     except KeyError as e:
         logger.error(f"KeyError: args[{e}] - non-existent parameters")
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         exit(1)
 
     clear_console()
-    print_rule("Calculate")
-    print_info("> Reading config file:")
+    print_rule(_("Calculate"))
+    print_info(_("> Reading config file:"))
 
     config = read_config_file(config_path)
     weight_errors = validate_weights(config)
@@ -158,7 +169,7 @@ def command_calculate(args):
         print_rule()
         sys.exit(1)
 
-    print_info("\n> Reading extracted files:")
+    print_info(_("\n> Reading extracted files:"))
 
     data_calculated, success, warnings = calculate_metrics(extracted_path, config)
 
@@ -169,41 +180,45 @@ def command_calculate(args):
 
     if warnings:
         print_warn(
-            f"\nCalculations finished with {len(warnings)} warning(s), see above."
+            _("\nCalculations finished with {count} warning(s), see above.").format(
+                count=len(warnings)
+            )
         )
     else:
-        print_success("\nAll calculations performed successfully!")
+        print_success(_("\nAll calculations performed successfully!"))
 
     show_results(output_format, data_calculated, config_path, config)
     print_rule()
 
     print_panel(
-        title="Done",
-        menssage="> See the publications for more information: \n"
-        "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
-        "https://dl.acm.org/doi/10.1145/3422392.3422450 \n",
+        title=_("Done"),
+        menssage=_(
+            "> See the publications for more information: \n"
+            "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
+            "https://dl.acm.org/doi/10.1145/3422392.3422450 \n"
+        ),
     )
 
 
 def calculate_all(json_data, file_name, config, warnings: list | None = None):
     if is_legacy_sonar_extraction(json_data):
-        message = (
-            f"{file_name} does not record the component types (FIL, UTS, TRK). "
+        message = _(
+            "{file} does not record the component types (FIL, UTS, TRK). "
             "Run msgram extract again to calculate the per-file measures like the Service does."
-        )
+        ).format(file=file_name)
         print_warn(message)
         if warnings is not None:
             warnings.append(message)
-    data_measures, _ = calculate_measures(json_data, config, warnings)
-    data_subcharacteristics, _ = calculate_subcharacteristics(
+    data_measures, _unused = calculate_measures(json_data, config, warnings)
+    data_subcharacteristics, _unused = calculate_subcharacteristics(
         config, data_measures["measures"]
     )
-    data_characteristics, _ = (
+    data_characteristics, _unused = (
         calculate_characteristics(config, data_subcharacteristics["subcharacteristics"])
         if data_subcharacteristics["subcharacteristics"]
         else ([], [])
     )
-    data_tsqmi, _ = (
+    data_tsqmi, _unused = (
         calculate_tsqmi(config, data_characteristics["characteristics"])
         if data_characteristics
         else ([], [])
@@ -236,7 +251,9 @@ def show_results(output_format, data_calculated, config_path, config=None):
 
     if len(data_calculated) == 0:
         print_warn(
-            f"WARNING: No extracted file read so no {output_format} was generated!"
+            _(
+                "WARNING: No extracted file read so no {output_format} was generated!"
+            ).format(output_format=output_format)
         )
         return
 
@@ -250,11 +267,11 @@ def show_results(output_format, data_calculated, config_path, config=None):
         show_tree(data_calculated[0], config or pre_config)
 
     elif output_format == "csv":
-        print_info("Exporting CSV...")
+        print_info(_("Exporting CSV..."))
         export_csv(data_calculated, config_path)
 
     elif output_format == "json":
-        print_info("Exporting JSON...")
+        print_info(_("Exporting JSON..."))
         export_json(data_calculated, config_path)
 
 
@@ -306,7 +323,7 @@ def configured_entities(config_entries: list, calculated: list):
 
 def add_measure_nodes(parent, measures_c, measures):
     tree_muted = color_tag("muted")
-    for _, measure in configured_entities(measures_c, measures):
+    for _entry, measure in configured_entities(measures_c, measures):
         Node(f"{tree_muted}{measure['key']} {measure['value']}", parent=parent)
 
 
@@ -324,7 +341,7 @@ def show_tree(data_calculated, config):
     tree_success = color_tag("success")
     tree_accent = color_tag("accent")
 
-    print_info("Overview - tree:\n\n")
+    print_info(_("Overview - tree:\n\n"))
     tsqmi_tree = Node(f"{tree_success}{tsqmi['key']}: {tsqmi['value']}")
 
     # Follows the user's msgram.json and matches entities by key, so removed or
@@ -354,7 +371,9 @@ def export_json(data_calculated: list, file_path: Path = DEFAULT_CONFIG_PATH):
             write_file,
             indent=4,
         )
-    print_success(f"Success: {file_path.name} exported as JSON")
+    print_success(
+        _("Success: {filename} exported as JSON").format(filename=file_path.name)
+    )
 
 
 def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PATH")):
@@ -371,7 +390,7 @@ def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PAT
                 header_column = []
                 columns = []
 
-                for _, value in item.items():
+                for _key, value in item.items():
                     for column in value:
                         header_column.append(column["key"])
                         columns.append(column["value"])
@@ -382,4 +401,6 @@ def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PAT
         writer.writerow(csv_header)
         writer.writerows(csv_rows)
 
-    print_success(f"Success: {file_path.name} exported as CSV")
+    print_success(
+        _("Success: {filename} exported as CSV").format(filename=file_path.name)
+    )

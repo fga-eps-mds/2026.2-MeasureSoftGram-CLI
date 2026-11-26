@@ -11,6 +11,7 @@ calculate não calcula e o list termina com código diferente de zero.
 import math
 from numbers import Real
 
+from src.cli.i18n import _
 from src.cli.resources.weight_groups import list_groups
 from src.cli.utils import print_error, print_output
 
@@ -35,7 +36,7 @@ def _format_number(value) -> str:
 
 def _format_value(value) -> str:
     if value is None:
-        return "ausente"
+        return _("missing")
     if isinstance(value, str):
         return f'"{value}"'
     return str(value)
@@ -59,8 +60,16 @@ def validate_weights(config: dict) -> list:
         ]
         if invalid:
             errors.extend(
-                f"{group.label}: o peso de {entity} é {_format_value(value)} "
-                f"(esperado um número entre {MIN_WEIGHT} e {MAX_WEIGHT})"
+                _(
+                    "{group}: the weight of {entity} is {value} "
+                    "(expected a number between {min} and {max})"
+                ).format(
+                    group=group.label,
+                    entity=entity,
+                    value=_format_value(value),
+                    min=MIN_WEIGHT,
+                    max=MAX_WEIGHT,
+                )
                 for entity, value in invalid
             )
             continue
@@ -68,8 +77,11 @@ def validate_weights(config: dict) -> list:
         total = sum(group.weights[entity] for entity in group.entities)
         if not math.isclose(total, EXPECTED_SUM, abs_tol=SUM_TOLERANCE):
             errors.append(
-                f"{group.label}: a soma é {_format_number(total)} "
-                f"(esperado {EXPECTED_SUM})"
+                _("{group}: the sum is {total} (expected {expected})").format(
+                    group=group.label,
+                    total=_format_number(total),
+                    expected=EXPECTED_SUM,
+                )
             )
     return errors
 
@@ -77,9 +89,9 @@ def validate_weights(config: dict) -> list:
 def format_weight_errors(errors: list, config_file) -> list:
     """Linhas da mensagem de erro, no formato do protótipo da DOC#302."""
     return (
-        [f"Pesos inválidos em {config_file}"]
+        [_("Invalid weights in {file}").format(file=config_file)]
         + [f"  • {error}" for error in errors]
-        + ["  Corrija o arquivo ou use: msgram weights"]
+        + [_("  Fix the file or use: msgram weights")]
     )
 
 

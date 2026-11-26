@@ -24,122 +24,122 @@
 # ---
 # name: test_list_shows_config_created_by_init
   '''
-  ℹ Será usado arquivo informado pelo usuário:
+  ℹ The user-provided file will be used:
   ─────────────────────────────────────────── Listing Configuration Parameters ───────────────────────────────────────────
   
   ℹ MSGram config file 'msgram.json' exists already!
   ℹ
-  Característica:
+  Characteristic:
   reliability
-  Peso: 34%
-  Sub-característica(s):
-  Sub-característica(s):
+  Weight: 34%
+  Sub-characteristic(s):
+  Sub-characteristic(s):
   │  maturity
-  │  Peso: 50%
-  │  │  Medida(s):
+  │  Weight: 50%
+  │  │  Measure(s):
   │  │  │  ci_feedback_time
-  │  │  │  Peso: 100%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 100%
+  │  │  │  Metric(s):
   │  │  │  └─sum_ci_feedback_times
   │  │  │  └─total_builds
-  │  │  │  │ Valores de referência: Min = 1 e Max = 900
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  Fim-SubCaracterística
+  │  │  │  │ Reference values: Min = 1 and Max = 900
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  End-SubCharacteristic
   │  testing_status
-  │  Peso: 50%
-  │  │  Medida(s):
+  │  Weight: 50%
+  │  │  Measure(s):
   │  │  │  passed_tests
-  │  │  │  Peso: 33%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 33%
+  │  │  │  Metric(s):
   │  │  │  └─tests
   │  │  │  └─test_failures
   │  │  │  └─test_errors
-  │  │  │  │ Valores de referência: Min = 0 e Max = 1
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  │  │  Medida(s):
+  │  │  │  │ Reference values: Min = 0 and Max = 1
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  │  │  Measure(s):
   │  │  │  test_builds
-  │  │  │  Peso: 33%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 33%
+  │  │  │  Metric(s):
   │  │  │  └─tests
   │  │  │  └─test_execution_time
-  │  │  │  │ Valores de referência: Min = 0 e Max = 300000
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  │  │  Medida(s):
+  │  │  │  │ Reference values: Min = 0 and Max = 300000
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  │  │  Measure(s):
   │  │  │  test_coverage
-  │  │  │  Peso: 34%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 34%
+  │  │  │  Metric(s):
   │  │  │  └─coverage
-  │  │  │  │ Valores de referência: Min = 60 e Max = 100
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  Fim-SubCaracterística
-  Fim-Característica
+  │  │  │  │ Reference values: Min = 60 and Max = 100
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  End-SubCharacteristic
+  End-Characteristic
   ℹ
-  Característica:
+  Characteristic:
   maintainability
-  Peso: 33%
-  Sub-característica(s):
+  Weight: 33%
+  Sub-characteristic(s):
   │  modifiability
-  │  Peso: 100%
-  │  │  Medida(s):
+  │  Weight: 100%
+  │  │  Measure(s):
   │  │  │  non_complex_file_density
-  │  │  │  Peso: 25%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 25%
+  │  │  │  Metric(s):
   │  │  │  └─functions
   │  │  │  └─complexity
-  │  │  │  │ Valores de referência: Min = 0 e Max = 10
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  │  │  Medida(s):
+  │  │  │  │ Reference values: Min = 0 and Max = 10
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  │  │  Measure(s):
   │  │  │  commented_file_density
-  │  │  │  Peso: 25%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 25%
+  │  │  │  Metric(s):
   │  │  │  └─comment_lines_density
-  │  │  │  │ Valores de referência: Min = 10 e Max = 30
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  │  │  Medida(s):
+  │  │  │  │ Reference values: Min = 10 and Max = 30
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  │  │  Measure(s):
   │  │  │  duplication_absense
-  │  │  │  Peso: 25%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 25%
+  │  │  │  Metric(s):
   │  │  │  └─duplicated_lines_density
-  │  │  │  │ Valores de referência: Min = 0 e Max = 5
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  │  │  Medida(s):
+  │  │  │  │ Reference values: Min = 0 and Max = 5
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  │  │  Measure(s):
   │  │  │  technical_debt_ratio
-  │  │  │  Peso: 25%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 25%
+  │  │  │  Metric(s):
   │  │  │  └─sqale_debt_ratio
-  │  │  │  │ Valores de referência: Min = 0 e Max = 20
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  Fim-SubCaracterística
-  Fim-Característica
+  │  │  │  │ Reference values: Min = 0 and Max = 20
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  End-SubCharacteristic
+  End-Characteristic
   ℹ
-  Característica:
+  Characteristic:
   functional_suitability
-  Peso: 33%
-  Sub-característica(s):
+  Weight: 33%
+  Sub-characteristic(s):
   │  functional_completeness
-  │  Peso: 100%
-  │  │  Medida(s):
+  │  Weight: 100%
+  │  │  Measure(s):
   │  │  │  team_throughput
-  │  │  │  Peso: 100%
-  │  │  │  Métrica(s):
+  │  │  │  Weight: 100%
+  │  │  │  Metric(s):
   │  │  │  └─resolved_issues
   │  │  │  └─total_issues
-  │  │  │  │ Valores de referência: Min = 45 e Max = 100
-  │  │  │  Fim-Métrica(s)
-  │  │  Fim-Medida(s)
-  Fim-SubCaracterística
-  Fim-Característica
+  │  │  │  │ Reference values: Min = 45 and Max = 100
+  │  │  │  End-Metric(s)
+  │  │  End-Measure(s)
+  End-SubCharacteristic
+  End-Characteristic
   
-  ℹ Para definir os pesos por comparação, use: msgram weights
-  ℹ Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`
+  ℹ To set the weights by pairwise comparison, use: msgram weights
+  ℹ To set the weights manually, use: `vim .msgram/msgram.json`
   
   '''
 # ---

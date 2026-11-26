@@ -11,18 +11,22 @@ from dataclasses import dataclass
 from math import comb
 from typing import Dict, List
 
-LEVEL_LABELS = {
-    "characteristics": "Características",
-    "subcharacteristics": "subcaracterísticas",
-    "measures": "medidas",
-}
+from src.cli.i18n import _
+
+
+def level_label(level: str) -> str:
+    return {
+        "characteristics": _("Characteristics"),
+        "subcharacteristics": _("subcharacteristics"),
+        "measures": _("measures"),
+    }[level]
 
 
 class InvalidGroupPath(ValueError):
     def __init__(self, path: str, valid_paths: List[str]):
         self.path = path
         self.valid_paths = valid_paths
-        super().__init__(f"Grupo inexistente: {path}")
+        super().__init__(_("Group does not exist: {path}").format(path=path))
 
 
 @dataclass(frozen=True)
@@ -39,9 +43,9 @@ class WeightGroup:
 
 def _group(parents: List[str], level: str, items: list) -> WeightGroup:
     if parents:
-        label = " › ".join(parents + [LEVEL_LABELS[level]])
+        label = " › ".join(parents + [level_label(level)])
     else:
-        label = LEVEL_LABELS[level]
+        label = level_label(level)
     return WeightGroup(
         path="/".join(parents + [level]),
         label=label,
@@ -87,7 +91,9 @@ def apply_weights(config: dict, new_weights: Dict[str, Dict[str, int]]) -> dict:
         unknown = set(weights) - keys
         if unknown:
             raise ValueError(
-                f"Entidades fora do grupo {path}: {', '.join(sorted(unknown))}"
+                _("Entities outside the group {path}: {entities}").format(
+                    path=path, entities=", ".join(sorted(unknown))
+                )
             )
         for item in items:
             if item["key"] in weights:

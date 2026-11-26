@@ -13,6 +13,12 @@ from src.cli.resources.weights import format_weight_errors, validate_weights
 from staticfiles import DEFAULT_PRE_CONFIG as pre_config
 from tests.unit.cli_output import normalize_cli_output
 
+
+@pytest.fixture(autouse=True)
+def _portuguese(monkeypatch):
+    monkeypatch.setenv("MSGRAM_LANG", "pt_BR")
+
+
 MODIFIABILITY = "maintainability › modifiability › medidas"
 EXTRACTED = Path(
     "tests/unit/data/"

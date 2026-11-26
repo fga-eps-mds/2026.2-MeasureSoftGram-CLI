@@ -5,6 +5,7 @@ from pathlib import Path
 
 from core.transformations import diff
 
+from src.cli.i18n import _
 from src.cli.jsonReader import open_json_file
 from src.cli.utils import (
     clear_console,
@@ -28,7 +29,11 @@ def read_config_file(config_path):
 
         return sorted(json, key=lambda x: x["key"])
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error reading config file in {config_path}: {e}\n")
+        print_error(
+            _("Error reading config file in {path}: {error}\n").format(
+                path=config_path, error=e
+            )
+        )
         print_rule()
         exit(1)
 
@@ -54,7 +59,11 @@ def read_calculated_file(extracted_calculation):
 
         return calculated_data
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error reading calculated file in {extracted_calculation}: {e}\n")
+        print_error(
+            _("Error reading calculated file in {path}: {error}\n").format(
+                path=extracted_calculation, error=e
+            )
+        )
         print_rule()
         exit(1)
 
@@ -96,7 +105,7 @@ def calculate_diff(planned, calculated, rp_path, rd_path):
 
         return formated_result, True
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error calculating: {e}\n")
+        print_error(_("Error calculating: {error}\n").format(error=e))
         return formated_result, False
 
 
@@ -108,16 +117,18 @@ def command_diff(args):
 
     except KeyError as e:
         logger.error(f"KeyError: args[{e}] - non-existent parameters")
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         exit(1)
 
     clear_console()
-    print_rule("Calculate")
-    print_info("> Reading config file:")
+    print_rule(_("Diff"))
+    print_info(_("> Reading config file:"))
 
     planned = read_config_file(config_path)
 
-    print_info("\n> Reading calculated file:")
+    print_info(_("\n> Reading calculated file:"))
 
     calculated = read_calculated_file(extracted_calculation)
 
@@ -126,7 +137,7 @@ def command_diff(args):
     )
 
     if success:
-        print_success("\nDiff calculation performed successfully!")
+        print_success(_("\nDiff calculation performed successfully!"))
     else:
         exit(1)
 
@@ -134,10 +145,12 @@ def command_diff(args):
     print_rule()
 
     print_panel(
-        title="Done",
-        menssage="> See the publications for more information: \n"
-        "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
-        "https://dl.acm.org/doi/10.1145/3422392.3422450 \n",
+        title=_("Done"),
+        menssage=_(
+            "> See the publications for more information: \n"
+            "https://dl.acm.org/doi/10.1145/3239235.3267438 \n"
+            "https://dl.acm.org/doi/10.1145/3422392.3422450 \n"
+        ),
     )
 
 
@@ -145,11 +158,11 @@ def show_results(output_format, data_calculated, config_path):
     show_tabulate(data_calculated)
 
     if output_format == "csv":
-        print_info("Exporting CSV...")
+        print_info(_("Exporting CSV..."))
         export_csv(data_calculated, config_path)
 
     elif output_format == "json":
-        print_info("Exporting JSON...")
+        print_info(_("Exporting JSON..."))
         export_json(data_calculated, config_path)
 
 
@@ -174,7 +187,9 @@ def export_json(data_calculated: list, file_path: Path = DEFAULT_CONFIG_PATH):
             write_file,
             indent=4,
         )
-    print_success(f"Success: {file_path.name} exported as JSON")
+    print_success(
+        _("Success: {filename} exported as JSON").format(filename=file_path.name)
+    )
 
 
 def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PATH")):
@@ -205,7 +220,9 @@ def export_csv(data_calculated: list, file_path: Path = Path("DEFAULT_CONFIG_PAT
                     }
                 )
 
-    print_success(f"Success: {file_path.name} exported as CSV")
+    print_success(
+        _("Success: {filename} exported as CSV").format(filename=file_path.name)
+    )
 
 
 def extract_values(planned, calculated, rp_path, rd_path):

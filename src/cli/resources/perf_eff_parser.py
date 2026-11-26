@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 from src.cli.exceptions import exceptions
+from src.cli.i18n import _
 from src.cli.utils import (
     print_error,
     print_rule,
@@ -15,11 +16,11 @@ def parse_performance_efficiency_data(path1: Path, path2: Path, repo_name: str):
         release1_endpoints = []
         release2_endpoints = []
 
-        for column_name, _ in release1_df.items():
+        for column_name, _values in release1_df.items():
             if "ENDPOINT" in str(column_name):
                 release1_endpoints.append(column_name)
 
-        for column_name, _ in release2_df.items():
+        for column_name, _values in release2_df.items():
             if "ENDPOINT" in str(column_name):
                 release2_endpoints.append(column_name)
 
@@ -71,6 +72,6 @@ def parse_performance_efficiency_data(path1: Path, path2: Path, repo_name: str):
         }
         return measures
     except exceptions.MeasureSoftGramCLIException as e:
-        print_error(f"Error parsing csv files: {e}\n")
+        print_error(_("Error parsing csv files: {error}\n").format(error=e))
         print_rule()
         exit(1)

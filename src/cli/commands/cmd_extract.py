@@ -9,6 +9,7 @@ from pathlib import Path
 
 from genericparser import GenericParser, GithubConnectionError
 
+from src.cli.i18n import _
 from src.cli.jsonReader import folder_reader
 from src.cli.utils import (
     clear_console,
@@ -35,12 +36,12 @@ def get_infos_from_name(filename: str) -> str:
     file_date = re.search(r"\d{1,2}-\d{1,2}-\d{4}-\d{1,2}-\d{1,2}", filename)
 
     if not file_date:
-        message = (
+        message = _(
             "Could not extract creation date from file. Was the file name "
             "to contain a date in the format dd-mm-yyyy-hh-mm"
         )
         print_warn(message)
-        print_warn(f"filename: {filename}")
+        print_warn(_("filename: {filename}").format(filename=filename))
         sys.exit(1)
 
     file_name = filename.rsplit(".", 1)[0]
@@ -62,7 +63,9 @@ def extract_github(
             "Error: Range of dates for filter must be in format 'dd/mm/yyyy-dd/mm/yyyy'"
         )
         print_error(
-            "Error: Range of dates for filter must be in format 'dd/mm/yyyy-dd/mm/yyyy'"
+            _(
+                "Error: Range of dates for filter must be in format 'dd/mm/yyyy-dd/mm/yyyy'"
+            )
         )
         sys.exit(1)
     filters = {
@@ -70,14 +73,20 @@ def extract_github(
         "workflows": gh_workflows.split(",") if gh_workflows else "build",
         "dates": gh_date_range if gh_date_range else None,
     }
-    print_info(f"\n> Extract and save metrics [{input_origin}]:")
+    print_info(
+        _("\n> Extract and save metrics [{origin}]:").format(origin=input_origin)
+    )
     try:
         result = parser.parse(
             input_value=gh_repository, type_input=input_origin, filters=filters
         )
     except GithubConnectionError as error:
         logger.error(f"Error: {error}")
-        print_error(f"Error: could not reach the GitHub API, no metrics were saved ({error})")
+        print_error(
+            _(
+                "Error: could not reach the GitHub API, no metrics were saved ({error})"
+            ).format(error=error)
+        )
         sys.exit(1)
     repository_name = gh_repository.replace("/", "-")
     save_file_with_results(
@@ -108,14 +117,20 @@ def extract_sonar(extracted_path: Path, sonar_path: Path, parser: GenericParser)
     files = list(sonar_path.glob("*.json"))
 
     if not files:
-        print_warn(f"No JSON files found in the specified data_path: {sonar_path}\n")
+        print_warn(
+            _("No JSON files found in the specified data_path: {path}\n").format(
+                path=sonar_path
+            )
+        )
         sys.exit(1)
 
     valid_files = len(files)
 
-    print_info(f"\n> Extract and save metrics [{input_origin}]:")
+    print_info(
+        _("\n> Extract and save metrics [{origin}]:").format(origin=input_origin)
+    )
     with make_progress_bar() as progress_bar:
-        task_request = progress_bar.add_task("Extracting files: ", total=len(files))
+        task_request = progress_bar.add_task(_("Extracting files: "), total=len(files))
         progress_bar.advance(task_request)
 
         for component, filename, files_error in folder_reader(sonar_path, "json"):
@@ -133,8 +148,10 @@ def extract_sonar(extracted_path: Path, sonar_path: Path, parser: GenericParser)
 
         time_extract = perf_counter() - time_init
         print_success(
-            f"\n\nMetrics successfully extracted [{valid_files}/{len(files)} "
-            f"files - {time_extract:0.2f} seconds]!"
+            _(
+                "\n\nMetrics successfully extracted [{valid}/{total} "
+                "files - {elapsed:0.2f} seconds]!"
+            ).format(valid=valid_files, total=len(files), elapsed=time_extract)
         )
 
 
@@ -152,7 +169,9 @@ def command_extract(args):
 
     except Exception as e:
         logger.error(f"KeyError: args[{e}] - non-existent parameters")
-        print_error(f"KeyError: args[{e}] - non-existent parameters")
+        print_error(
+            _("KeyError: args[{error}] - non-existent parameters").format(error=e)
+        )
         exit(1)
 
     pe_params = (
@@ -162,7 +181,9 @@ def command_extract(args):
     )
     if pe_params > 0 and pe_params < 3:
         print_error(
-            "Error: Some pe_ parameters for extracting the performance efficiency data are missing"
+            _(
+                "Error: Some pe_ parameters for extracting the performance efficiency data are missing"
+            )
         )
         sys.exit(1)
 
@@ -172,12 +193,14 @@ def command_extract(args):
             "It is necessary to pass sonar_path, github_repository or the pe_ parameters"
         )
         print_error(
-            "It is necessary to pass sonar_path, github_repository or the pe_ parameters"
+            _(
+                "It is necessary to pass sonar_path, github_repository or the pe_ parameters"
+            )
         )
         sys.exit(1)
 
     clear_console()
-    print_rule("Extract metrics")
+    print_rule(_("Extract metrics"))
     parser = GenericParser()
 
     if not os.path.isdir(extracted_path):
@@ -185,7 +208,9 @@ def command_extract(args):
             f'FileNotFoundError: extract directory "{extracted_path}" does not exists'
         )
         print_error(
-            f"FileNotFoundError: extract directory '{extracted_path}' does not exists"
+            _("FileNotFoundError: extract directory '{path}' does not exists").format(
+                path=extracted_path
+            )
         )
         sys.exit(1)
 
@@ -199,13 +224,15 @@ def command_extract(args):
             "Error: gh_repository must be specified in order to use gh_ parameters"
         )
         print_error(
-            "Error: gh_repository must be specified in order to use gh_ parameters"
+            _("Error: gh_repository must be specified in order to use gh_ parameters")
         )
         sys.exit(1)
 
     if pe_params == 3:
         input_origin = "performance-efficiency"
-        print_info(f"\n> Extract and save metrics [{input_origin}]:")
+        print_info(
+            _("\n> Extract and save metrics [{origin}]:").format(origin=input_origin)
+        )
         # All pe_params are set, so we should extract the performance efficiency data
         parsed_data = parse_performance_efficiency_data(
             pe_release1, pe_release2, pe_repository_name
@@ -222,13 +249,15 @@ def command_extract(args):
         extract_sonar(extracted_path, sonar_path, parser)
 
     print_panel(
-        "> Run msgram calculate all -ep 'extracted_path' -cp 'extracted_path' -o 'input_origin'"
+        _(
+            "> Run msgram calculate all -ep 'extracted_path' -cp 'extracted_path' -o 'input_origin'"
+        )
     )
 
 
 def save_file_with_results(extracted_path, filename, name, result):
-    print_status("Reading:", filename, "success")
-    print_status("Save   :", f"{name}\n", "success")
+    print_status(_("Reading:"), filename, "success")
+    print_status(_("Save   :"), f"{name}\n", "success")
 
     with open(f"{extracted_path}/{name}", "w") as f:
         f.write(json.dumps(result, indent=2))
