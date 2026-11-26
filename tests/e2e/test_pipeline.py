@@ -61,8 +61,7 @@ def test_sonar_calculate_terminal_output(msgram, sonar_extracted, tmp_path, snap
     assert normalize(after(result.stdout, CALC_DONE), tmp_path) == snapshot
 
 
-def test_list_shows_config_created_by_init(msgram, msgram_env, tmp_path, snapshot):
-    msgram_env["MSGRAM_LANG"] = "pt_BR"
+def test_list_shows_config_created_by_init(msgram, tmp_path, snapshot):
     cfg = tmp_path / "config"
     assert msgram("init", "-cp", cfg).returncode == 0
 
