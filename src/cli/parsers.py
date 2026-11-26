@@ -314,7 +314,7 @@ def create_parser():
         type=lambda p: Path(p).absolute(),
         required=True,
         help=_(
-            "path to the .json file with the planned/wished values ​​for the quality "
+            "path to the .json file with the planned/wished values for the quality "
             "characteristics of a release. quality requirements goals for a release."
         ),
     )
@@ -325,7 +325,7 @@ def create_parser():
         type=lambda p: Path(p).absolute(),
         required=True,
         help=_(
-            "path to the .json file with the model-calculated values ​​for a release's "
+            "path to the .json file with the model-calculated values for a release's "
             "quality characteristics observed/developed."
         ),
     )
@@ -350,7 +350,7 @@ def create_parser():
         type=lambda p: Path(p).absolute(),
         required=True,
         help=_(
-            "Path to the .json file with the model-calculated values for a release's quality"
+            "Path to the .json file with the model-calculated values for a release's quality "
             "characteristics observed/developed."
         ),
     )
@@ -361,7 +361,7 @@ def create_parser():
         type=lambda p: Path(p).absolute(),
         required=True,
         help=_(
-            "Path to the .json file with the planned/wished values for the quality characteristics"
+            "Path to the .json file with the planned/wished values for the quality characteristics "
             "of a release. Quality requirements goals for a release."
         ),
     )

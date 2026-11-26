@@ -123,7 +123,7 @@ def command_diff(args):
         exit(1)
 
     clear_console()
-    print_rule(_("Calculate"))
+    print_rule(_("Diff"))
     print_info(_("> Reading config file:"))
 
     planned = read_config_file(config_path)

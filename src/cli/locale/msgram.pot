@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 03:37-0300\n"
+"POT-Creation-Date: 2026-11-26 02:41-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.19.0\n"
 
 #: src/cli/aggregate_metrics.py:60 src/cli/aggregate_metrics.py:63
 #: src/cli/aggregate_metrics.py:78
@@ -199,14 +199,14 @@ msgstr ""
 
 #: src/cli/parsers.py:317
 msgid ""
-"path to the .json file with the planned/wished values ​​for the quality "
+"path to the .json file with the planned/wished values for the quality "
 "characteristics of a release. quality requirements goals for a release."
 msgstr ""
 
 #: src/cli/parsers.py:328
 msgid ""
-"path to the .json file with the model-calculated values ​​for a release's"
-" quality characteristics observed/developed."
+"path to the .json file with the model-calculated values for a release's "
+"quality characteristics observed/developed."
 msgstr ""
 
 #: src/cli/parsers.py:341
@@ -219,13 +219,13 @@ msgstr ""
 #: src/cli/parsers.py:353
 msgid ""
 "Path to the .json file with the model-calculated values for a release's "
-"qualitycharacteristics observed/developed."
+"quality characteristics observed/developed."
 msgstr ""
 
 #: src/cli/parsers.py:364
 msgid ""
 "Path to the .json file with the planned/wished values for the quality "
-"characteristicsof a release. Quality requirements goals for a release."
+"characteristics of a release. Quality requirements goals for a release."
 msgstr ""
 
 #: src/cli/parsers.py:374
@@ -275,7 +275,7 @@ msgstr ""
 msgid "KeyError: args[{error}] - non-existent parameters"
 msgstr ""
 
-#: src/cli/commands/cmd_calculate.py:119 src/cli/commands/cmd_diff.py:126
+#: src/cli/commands/cmd_calculate.py:119
 msgid "Calculate"
 msgstr ""
 
@@ -396,6 +396,10 @@ msgstr ""
 #: src/cli/commands/cmd_diff.py:108
 #, python-brace-format
 msgid "Error calculating: {error}\n"
+msgstr ""
+
+#: src/cli/commands/cmd_diff.py:126
+msgid "Diff"
 msgstr ""
 
 #: src/cli/commands/cmd_diff.py:131
