@@ -19,7 +19,7 @@ def compiled_catalog():
 
 
 def _clear_lang_env(monkeypatch):
-    for var in ("MSGRAM_LANG", "LC_ALL", "LC_MESSAGES", "LANG"):
+    for var in ("MSGRAM_LANG", "LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
         monkeypatch.delenv(var, raising=False)
 
 
@@ -35,6 +35,34 @@ def test_fallback_to_english_for_unsupported_or_c_locale(monkeypatch):
 
     monkeypatch.setenv("MSGRAM_LANG", "fr_FR")
     assert i18n._("Extract supported metrics") == "Extract supported metrics"
+
+
+@pytest.mark.parametrize("c_locale", ["C", "C.UTF-8", "C.utf8", "POSIX"])
+def test_lc_all_c_wins_over_lang(monkeypatch, c_locale):
+    _clear_lang_env(monkeypatch)
+    monkeypatch.setenv("LANG", "pt_BR.UTF-8")
+    monkeypatch.setenv("LC_ALL", c_locale)
+    assert i18n._("Extract supported metrics") == "Extract supported metrics"
+
+
+def test_language_variable_comes_before_locale(monkeypatch):
+    _clear_lang_env(monkeypatch)
+    monkeypatch.setenv("LANG", "en_US.UTF-8")
+    monkeypatch.setenv("LANGUAGE", "pt_BR:en")
+    assert i18n._("Extract supported metrics") == "Extrai métricas suportadas"
+
+
+def test_language_variable_is_ignored_with_c_locale(monkeypatch):
+    _clear_lang_env(monkeypatch)
+    monkeypatch.setenv("LANG", "C.UTF-8")
+    monkeypatch.setenv("LANGUAGE", "pt_BR")
+    assert i18n._("Extract supported metrics") == "Extract supported metrics"
+
+
+def test_lang_pt_br_translates(monkeypatch):
+    _clear_lang_env(monkeypatch)
+    monkeypatch.setenv("LANG", "pt_BR.UTF-8")
+    assert i18n._("Extract supported metrics") == "Extrai métricas suportadas"
 
 
 def test_translates_with_msgram_lang_pt_br(monkeypatch):

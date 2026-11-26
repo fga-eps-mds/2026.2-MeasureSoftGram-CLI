@@ -7,12 +7,31 @@ DOMAIN = "msgram"
 LOCALE_DIR = Path(__file__).resolve().parent / "locale"
 
 
+def _env(var: str) -> str:
+    return os.environ.get(var, "").strip()
+
+
+def _is_c_locale(value: str) -> bool:
+    return value.split(".")[0].split("@")[0].upper() in ("C", "POSIX")
+
+
+def _with_fallback(languages: list[str]) -> tuple[str, ...]:
+    return (*(lang.replace("-", "_") for lang in languages if lang), "en")
+
+
 def _get_languages() -> tuple[str, ...]:
-    for var in ("MSGRAM_LANG", "LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var, "").strip()
-        if value and value.upper() not in ("C", "C.UTF-8", "POSIX"):
-            return (value.replace("-", "_"), "en")
-    return ("en",)
+    override = _env("MSGRAM_LANG")
+    if override:
+        return ("en",) if _is_c_locale(override) else _with_fallback([override])
+    locale = next(
+        (_env(var) for var in ("LC_ALL", "LC_MESSAGES", "LANG") if _env(var)), ""
+    )
+    if not locale or _is_c_locale(locale):
+        return ("en",)
+    language_list = _env("LANGUAGE")
+    if language_list:
+        return _with_fallback(language_list.split(":"))
+    return _with_fallback([locale])
 
 
 @lru_cache(maxsize=8)
