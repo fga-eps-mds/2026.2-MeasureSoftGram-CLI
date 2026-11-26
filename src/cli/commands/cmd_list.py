@@ -44,34 +44,35 @@ def print_json_tree(data):
         key = data.get("key")
 
         if is_top:
-            result.append(f"{main_color}\nCaracterística:")
+            result.append(f"{main_color}\n" + _("Characteristic:"))
             is_top = False
         result.append(f"{main_color}{indent}{success_color}{key}")
 
         weight = data.get("weight", 0)
-        result.append(f"{main_color}{indent}Peso: {success_color}{weight}%")
+        result.append(f"{main_color}{indent}{_('Weight:')} {success_color}{weight}%")
 
         if "subcharacteristics" in data:
             for subchar in data["subcharacteristics"]:
-                result.append(f"{main_color}{indent}Sub-característica(s):")
+                result.append(f"{main_color}{indent}" + _("Sub-characteristic(s):"))
                 stack.append(
                     (subchar, f"{indent}│  ")
                 )  # Use the ASCII character │ (code 179)
 
         if "measures" in data:
             for measure in data["measures"]:
-                result.append(f"{main_color}{indent}│  Medida(s):")
+                result.append(f"{main_color}{indent}│  " + _("Measure(s):"))
                 measure_key = measure.get("key")
                 result.append(
                     f"{main_color}{indent}{indent}│  {success_color}{measure_key}"
                 )
                 result.append(
-                    f"{main_color}{indent}{indent}│  Peso: {success_color}{measure['weight']}%"
+                    f"{main_color}{indent}{indent}│  {_('Weight:')} "
+                    f"{success_color}{measure['weight']}%"
                 )
                 if "min_threshold" in measure and "max_threshold" in measure:
                     min_threshold = measure.get("min_threshold")
                     max_threshold = measure.get("max_threshold")
-                    result.append(f"{main_color}{indent}{indent}│  Métrica(s):")
+                    result.append(f"{main_color}{indent}{indent}│  " + _("Metric(s):"))
                     metrics = measure_to_metric.get(
                         measure_key, []
                     )  # Get associated metrics
@@ -80,17 +81,20 @@ def print_json_tree(data):
                         result.append(
                             f"{main_color}{indent}{indent}│  └─{success_color}{metric}"
                         )
-                        min_max = (
-                            f"Min = {success_color}{min_threshold} {main_color}"
-                            f"e Max = {success_color}{max_threshold}"
+                        min_max = _("Min = {min} and Max = {max}").format(
+                            min=f"{success_color}{min_threshold}{main_color}",
+                            max=f"{success_color}{max_threshold}",
                         )
                     result.append(
-                        f"{main_color}{indent}{indent}│  │ Valores de referência: {min_max}"
+                        f"{main_color}{indent}{indent}│  │ "
+                        + _("Reference values: {range}").format(range=min_max)
                     )
-                    result.append(f"{main_color}{indent}{indent}│  Fim-Métrica(s)")
-                result.append(f"{main_color}{indent}│  Fim-Medida(s)")
-            result.append(f"{main_color}Fim-SubCaracterística")
-    result.append(f"{main_color}Fim-Característica")
+                    result.append(
+                        f"{main_color}{indent}{indent}│  " + _("End-Metric(s)")
+                    )
+                result.append(f"{main_color}{indent}│  " + _("End-Measure(s)"))
+            result.append(f"{main_color}" + _("End-SubCharacteristic"))
+    result.append(f"{main_color}" + _("End-Characteristic"))
 
     return "\n".join(result)
 
@@ -103,12 +107,12 @@ def command_list(args):
         config_path: Path = args["config_path"]
 
         if config_path != DEFAULT_CONFIG_PATH:
-            print_info(_("Será usado arquivo informado pelo usuário: "))
+            print_info(_("The user-provided file will be used: "))
             file_path = str(config_path) + "/msgram.json"
         else:
             print_info(
                 _(
-                    "Não foi informado caminho do arquivo de configuração, será usado caminho padrão."
+                    "No configuration file path was given, the default path will be used."
                 )
             )
 
@@ -121,14 +125,10 @@ def command_list(args):
     print_rule(_("Listing Configuration Parameters"))
 
     if not (os.path.exists(file_path)):
-        print_info(_("O arquivo de configuração não foi encontrado. \n"))
+        print_info(_("The configuration file was not found. \n"))
+        print_info(_("Run 'msgram init' in the desired project to create it.\n"))
         print_info(
-            _("Execute o comando 'msgram init' no projeto desejado para criá-lo.\n")
-        )
-        print_info(
-            _(
-                "Ou use 'msgram init --config_path <path>' para informar o caminho ate o arquivo."
-            )
+            _("Or use 'msgram init --config_path <path>' to give the path to the file.")
         )
         sys.exit(1)
 
@@ -145,7 +145,5 @@ def command_list(args):
         print_info(output_string)
 
     console.line()
-    print_info(_("Para definir os pesos por comparação, use: msgram weights"))
-    print_info(
-        _("Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`")
-    )
+    print_info(_("To set the weights by pairwise comparison, use: msgram weights"))
+    print_info(_("To set the weights manually, use: `vim .msgram/msgram.json`"))

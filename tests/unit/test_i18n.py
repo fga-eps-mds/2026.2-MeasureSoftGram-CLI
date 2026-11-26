@@ -4,20 +4,6 @@ from src.cli import i18n
 from src.cli.parsers import create_parser
 
 
-@pytest.fixture(scope="module", autouse=True)
-def compiled_catalog():
-    po_path = i18n.LOCALE_DIR / "pt_BR" / "LC_MESSAGES" / f"{i18n.DOMAIN}.po"
-    mo_path = po_path.with_suffix(".mo")
-    if not mo_path.exists() or po_path.stat().st_mtime > mo_path.stat().st_mtime:
-        from babel.messages import mofile, pofile
-
-        with po_path.open("rb") as po_file:
-            catalog = pofile.read_po(po_file, locale="pt_BR")
-        with mo_path.open("wb") as mo_file:
-            mofile.write_mo(mo_file, catalog)
-    i18n._load_translation.cache_clear()
-
-
 def _clear_lang_env(monkeypatch):
     for var in ("MSGRAM_LANG", "LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
         monkeypatch.delenv(var, raising=False)
@@ -87,3 +73,29 @@ def test_argparse_help_respects_language(monkeypatch):
         "Interface de linha de comando para o MeasureSoftGram"
         in create_parser().format_help()
     )
+
+
+def test_weights_messages_follow_language(monkeypatch):
+    from src.cli.commands.cmd_weights import describe_answer, format_cr
+
+    _clear_lang_env(monkeypatch)
+    answer = ("a", "b", "a", "fortemente")
+    assert format_cr(0.0495) == "0.05"
+    assert describe_answer(answer) == "a × b: a is strongly more important"
+
+    monkeypatch.setenv("MSGRAM_LANG", "pt_BR")
+    assert format_cr(0.0495) == "0,05"
+    assert describe_answer(answer) == "a × b: a é fortemente mais importante"
+
+
+def test_weights_plural_follows_language(monkeypatch):
+    _clear_lang_env(monkeypatch)
+    singular, plural = (
+        "[{title}] {label} ({n} comparison)",
+        "[{title}] {label} ({n} comparisons)",
+    )
+    assert i18n.ngettext(singular, plural, 2).endswith("comparisons)")
+
+    monkeypatch.setenv("MSGRAM_LANG", "pt_BR")
+    assert i18n.ngettext(singular, plural, 1).endswith("comparação)")
+    assert i18n.ngettext(singular, plural, 3).endswith("comparações)")

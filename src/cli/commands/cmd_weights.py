@@ -13,7 +13,6 @@ from pathlib import Path
 
 from core.ahp import (
     CR_THRESHOLD,
-    SAATY_PHRASES,
     calculate_group,
     most_inconsistent,
     pairs,
@@ -21,7 +20,7 @@ from core.ahp import (
 from rich.prompt import Prompt
 from rich.text import Text
 
-from src.cli.i18n import _
+from src.cli.i18n import _, format_decimal, ngettext
 from src.cli.resources.weight_groups import (
     InvalidGroupPath,
     apply_weights,
@@ -32,17 +31,29 @@ from src.cli.utils import console, print_error, print_info, print_output, print_
 from src.config.settings import FILE_CONFIG
 
 INTENSITIES = ["moderadamente", "fortemente", "muito_fortemente", "extremamente"]
-INTENSITY_OPTIONS = (
-    "[1] moderadamente  [2] fortemente  [3] muito fortemente  [4] extremamente"
-)
+
+
+def intensity_options() -> str:
+    return _("[1] moderately  [2] strongly  [3] very strongly  [4] extremely")
+
+
+def saaty_phrase(intensity: str) -> str:
+    return {
+        "moderadamente": _("moderately more important"),
+        "fortemente": _("strongly more important"),
+        "muito_fortemente": _("very strongly more important"),
+        "extremamente": _("extremely more important"),
+    }[intensity]
 
 
 class Cancelled(Exception):
     pass
 
 
-class PromptPT(Prompt):
-    illegal_choice_message = "[prompt.invalid.choice]Escolha uma das opções mostradas"
+class ChoicePrompt(Prompt):
+    @property
+    def illegal_choice_message(self) -> str:
+        return "[prompt.invalid.choice]" + _("Choose one of the options shown")
 
 
 # ------------------------------------------------------------------ entrada
@@ -51,7 +62,7 @@ class PromptPT(Prompt):
 def ask_choice(prompt: str, choices, default=None) -> str:
     """Pergunta no terminal e devolve uma das opções. Isolada para os testes."""
     try:
-        return PromptPT.ask(
+        return ChoicePrompt.ask(
             Text(prompt),
             choices=list(choices),
             default=default,
@@ -66,13 +77,15 @@ def ask_choice(prompt: str, choices, default=None) -> str:
 
 def ask_pair(a: str, b: str):
     which = ask_choice(
-        f"  Qual é mais importante? [1] {a}  [2] {b}  [3] igualmente", ["1", "2", "3"]
+        _("  Which is more important? [1] {a}  [2] {b}  [3] equally").format(a=a, b=b),
+        ["1", "2", "3"],
     )
     if which == "3":
         return (a, b, None, "igual")
     preferred = a if which == "1" else b
     how = ask_choice(
-        f"  Quanto mais importante? {INTENSITY_OPTIONS}", ["1", "2", "3", "4"]
+        _("  How much more important? {options}").format(options=intensity_options()),
+        ["1", "2", "3", "4"],
     )
     return (a, b, preferred, INTENSITIES[int(how) - 1])
 
@@ -81,30 +94,36 @@ def ask_pair(a: str, b: str):
 
 
 def format_cr(cr) -> str:
-    return f"{cr:.2f}".replace(".", ",")
+    return format_decimal(cr)
 
 
 def describe_answer(answer) -> str:
     a, b, preferred, intensity = answer
     if preferred is None:
-        return f"{a} × {b}: igualmente importantes"
-    return f"{a} × {b}: {preferred} é {SAATY_PHRASES[intensity]}"
+        return _("{a} × {b}: equally important").format(a=a, b=b)
+    return _("{a} × {b}: {preferred} is {phrase}").format(
+        a=a, b=b, preferred=preferred, phrase=saaty_phrase(intensity)
+    )
 
 
 def describe_suggestion(answer) -> str:
     _first, _second, preferred, intensity = answer
     if preferred is None:
-        return "igualmente importantes"
-    return f"{preferred} é {SAATY_PHRASES[intensity]}"
+        return _("equally important")
+    return _("{preferred} is {phrase}").format(
+        preferred=preferred, phrase=saaty_phrase(intensity)
+    )
 
 
 def describe_cr(result) -> str:
     if result.consistency_ratio is None:
-        return "CR não se aplica"
+        return _("CR does not apply")
     if result.consistent:
         return f"CR {format_cr(result.consistency_ratio)}"
     limit = format_cr(CR_THRESHOLD)
-    return f"⚠ CR {format_cr(result.consistency_ratio)}, acima de {limit}, aceito"
+    return _("⚠ CR {value}, above {limit}, accepted").format(
+        value=format_cr(result.consistency_ratio), limit=limit
+    )
 
 
 # ------------------------------------------------------------------ grupos
@@ -116,8 +135,14 @@ def ask_group(group, title: str):
     n = len(group_pairs)
     while True:
         console.line()
-        plural = "comparação" if n == 1 else "comparações"
-        print_output(f"[{title}] {group.label} ({n} {plural})", "accent")
+        print_output(
+            ngettext(
+                "[{title}] {label} ({n} comparison)",
+                "[{title}] {label} ({n} comparisons)",
+                n,
+            ).format(title=title, label=group.label, n=n),
+            "accent",
+        )
         answers = []
         for i, (a, b) in enumerate(group_pairs, start=1):
             print_output(f"({i}/{n}) {a} × {b}")
@@ -127,32 +152,43 @@ def ask_group(group, title: str):
 
         if result.consistency_ratio is None:
             print_output(
-                f"  Consistência: não se aplica ({len(group.entities)} entidades)",
+                _("  Consistency: does not apply ({n} entities)").format(
+                    n=len(group.entities)
+                ),
                 "muted",
             )
             return answers, result
         if result.consistent:
             print_output(
-                f"  ✔ Consistência: CR = {format_cr(result.consistency_ratio)}",
+                _("  ✔ Consistency: CR = {value}").format(
+                    value=format_cr(result.consistency_ratio)
+                ),
                 "success",
             )
             return answers, result
 
         print_output(
-            f"  ⚠ Consistência: CR = {format_cr(result.consistency_ratio)} "
-            f"(acima de {format_cr(CR_THRESHOLD)})",
+            _("  ⚠ Consistency: CR = {value} (above {limit})").format(
+                value=format_cr(result.consistency_ratio),
+                limit=format_cr(CR_THRESHOLD),
+            ),
             "warning",
         )
-        print_output("    Suas respostas se contradizem.", "warning")
+        print_output(_("    Your answers contradict each other."), "warning")
         conflict = most_inconsistent(group.entities, answers, result)
         if conflict:
             print_output(
-                f"    Conflito mais provável: {conflict.a} × {conflict.b}. "
-                f"Sugestão: {describe_suggestion(conflict.suggested)}",
+                _(
+                    "    Most likely conflict: {a} × {b}. Suggestion: {suggestion}"
+                ).format(
+                    a=conflict.a,
+                    b=conflict.b,
+                    suggestion=describe_suggestion(conflict.suggested),
+                ),
                 "warning",
             )
         if (
-            ask_choice("    [1] refazer o grupo  [2] aceitar mesmo assim", ["1", "2"])
+            ask_choice(_("    [1] redo the group  [2] accept anyway"), ["1", "2"])
             == "2"
         ):
             return answers, result
@@ -160,19 +196,19 @@ def ask_group(group, title: str):
 
 def print_summary(entries, partial: bool):
     console.line()
-    print_rule(_("Resumo"))
+    print_rule(_("Summary"))
     for group, answers, result in entries:
         print_output(f"{group.label} ({describe_cr(result)})", "accent")
         for answer in answers:
             print_output(f"  {describe_answer(answer)}")
-        print_output(f"{'':33}antes → depois", "muted")
+        print_output(f"{'':33}" + _("before → after"), "muted")
         for entity in group.entities:
             before = group.weights.get(entity)
             before = "-" if before is None else before
             print_output(f"  {entity:<30} {before:>3} → {result.weights[entity]}")
         console.line()
     if partial:
-        print_info(_("Os demais grupos não foram alterados."))
+        print_info(_("The other groups were not changed."))
 
 
 # ------------------------------------------------------------------ arquivo
@@ -204,18 +240,14 @@ def display_path(file_path: Path) -> str:
 def load_config(file_path: Path, shown_path: str) -> dict:
     """Lê o msgram.json ou encerra com a orientação do Cenário 6."""
     if not file_path.exists():
-        print_error(
-            _("Nenhum arquivo de configuração encontrado em {path}").format(
-                path=shown_path
-            )
-        )
-        print_output(_("  Execute o comando msgram init"))
+        print_error(_("No configuration file found at {path}").format(path=shown_path))
+        print_output(_("  Run the msgram init command"))
         sys.exit(1)
     try:
         return json.loads(file_path.read_text())
     except json.JSONDecodeError as e:
         print_error(
-            _("O arquivo {path} não é um JSON válido: {error}").format(
+            _("The file {path} is not valid JSON: {error}").format(
                 path=shown_path, error=e
             )
         )
@@ -230,8 +262,8 @@ def select_groups(config: dict, group_path):
     try:
         return [find_group(groups, group_path)]
     except InvalidGroupPath as e:
-        print_error(_("Grupo inexistente: {path}").format(path=e.path))
-        print_output(_("  Caminhos válidos:"))
+        print_error(_("Group does not exist: {path}").format(path=e.path))
+        print_output(_("  Valid paths:"))
         for path in e.valid_paths:
             print_output(f"    {path}")
         sys.exit(1)
@@ -241,22 +273,27 @@ def print_header(groups):
     to_ask = [g for g in groups if len(g.entities) > 1]
     singles = len(groups) - len(to_ask)
     total = sum(g.comparisons for g in groups)
-    print_output("Definição de pesos por comparação")
+    print_output(_("Weight definition by pairwise comparison"))
     print_output(
-        f"{len(groups)} grupos no modelo · {total} comparações · "
-        f"{singles} grupos com uma entidade (peso 100, sem perguntas)",
+        _(
+            "{groups} groups in the model · {total} comparisons · "
+            "{singles} groups with a single entity (weight 100, no questions)"
+        ).format(groups=len(groups), total=total, singles=singles),
         "muted",
     )
 
 
 def confirm_save(shown_path: str) -> bool:
+    yes = _("y")
     try:
         answer = ask_choice(
-            f"Gravar os novos pesos em {shown_path}? [s/N]", ["s", "n"], default="n"
+            _("Save the new weights to {path}? [y/N]").format(path=shown_path),
+            [yes, "n"],
+            default="n",
         )
     except (KeyboardInterrupt, Cancelled):
         return False
-    return answer == "s"
+    return answer == yes
 
 
 def command_weights(args):
@@ -275,25 +312,30 @@ def command_weights(args):
         entries = run_groups(groups, single_group=bool(group_path))
     except (KeyboardInterrupt, Cancelled):
         console.line()
-        print_output(f"Cancelado. {shown_path} não foi alterado.", "warning")
+        print_output(
+            _("Cancelled. {path} was not changed.").format(path=shown_path), "warning"
+        )
         sys.exit(130)
 
     changed = [(g, a, r) for g, a, r in entries if a or g.weights != r.weights]
     if not changed:
         console.line()
-        print_info(_("Nenhum peso a alterar."))
+        print_info(_("No weights to change."))
         return
 
     print_summary(changed, partial=bool(group_path))
 
     if not confirm_save(shown_path):
-        print_output(f"Pesos não gravados. {shown_path} não foi alterado.", "warning")
+        print_output(
+            _("Weights not saved. {path} was not changed.").format(path=shown_path),
+            "warning",
+        )
         return
 
     save_config(
         file_path, apply_weights(config, {g.path: r.weights for g, _, r in changed})
     )
-    print_output(f"✔ Pesos gravados em {shown_path}.", "success")
+    print_output(_("✔ Weights saved to {path}.").format(path=shown_path), "success")
 
 
 def run_groups(groups, single_group: bool):
@@ -307,11 +349,20 @@ def run_groups(groups, single_group: bool):
             entries.append((group, [], calculate_group(group.entities, [])))
             if single_group:
                 print_output(
-                    f"{group.label}: uma entidade, peso 100 sem perguntas", "muted"
+                    _("{label}: one entity, weight 100 with no questions").format(
+                        label=group.label
+                    ),
+                    "muted",
                 )
             continue
         position += 1
-        title = "Grupo" if single_group else f"Grupo {position}/{len(to_ask)}"
+        title = (
+            _("Group")
+            if single_group
+            else _("Group {position}/{total}").format(
+                position=position, total=len(to_ask)
+            )
+        )
         answers, result = ask_group(group, title)
         entries.append((group, answers, result))
     return entries

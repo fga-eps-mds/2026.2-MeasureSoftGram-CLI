@@ -104,11 +104,11 @@ def test_ca3_list_shows_measure_under_modifiability_and_maintainability(msgram, 
     result = msgram("list", "-cp", cfg)
 
     assert result.returncode == 0, result.stdout
-    maintainability = result.stdout.split("maintainability", 1)[1].split("Fim-Característica", 1)[0]
+    maintainability = result.stdout.split("maintainability", 1)[1].split("End-Characteristic", 1)[0]
     modifiability = maintainability.split("modifiability", 1)[1]
     assert "technical_debt_ratio" in modifiability
     assert "sqale_debt_ratio" in modifiability
-    assert "Valores de referência: Min = 0 e Max = 20" in modifiability.split("technical_debt_ratio", 1)[1]
+    assert "Reference values: Min = 0 and Max = 20" in modifiability.split("technical_debt_ratio", 1)[1]
 
 
 @pytest.mark.us("US01.01-CA4", "US01.01-CA5")

@@ -10,6 +10,12 @@ import pytest
 
 from tests.e2e.support import SONAR_DIR
 
+
+@pytest.fixture(autouse=True)
+def _portuguese(monkeypatch):
+    monkeypatch.setenv("MSGRAM_LANG", "pt_BR")
+
+
 # Respostas do protótipo 1 da US (grupos 1 a 3) e modifiability toda "igualmente".
 G1 = ["3", "1", "1", "1", "1"]  # R = M; R e M moderadamente mais que F
 G2 = ["2", "2"]  # maturity fortemente mais que testing_status

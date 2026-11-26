@@ -49,7 +49,7 @@ CASES = [
         id="calculate-sem-metrics",
     ),
     pytest.param(
-        ["list", "-cp", "nao-existe"], 1, "O arquivo de configuração não foi encontrado",
+        ["list", "-cp", "nao-existe"], 1, "The configuration file was not found",
         id="list-sem-config",
     ),
     pytest.param(

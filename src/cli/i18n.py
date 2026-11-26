@@ -44,6 +44,23 @@ def _load_translation(languages: tuple[str, ...]) -> gettext.NullTranslations:
     )
 
 
+def _translation() -> gettext.NullTranslations:
+    return _load_translation(_get_languages())
+
+
 def _(message: str) -> str:
     """Translate a message using the active CLI language."""
-    return _load_translation(_get_languages()).gettext(message)
+    return _translation().gettext(message)
+
+
+def ngettext(singular: str, plural: str, n: int) -> str:
+    return _translation().ngettext(singular, plural, n)
+
+
+def current_language() -> str:
+    return _translation().info().get("language", "en")
+
+
+def format_decimal(value: float, digits: int = 2) -> str:
+    text = f"{value:.{digits}f}"
+    return text.replace(".", ",") if current_language().startswith("pt") else text

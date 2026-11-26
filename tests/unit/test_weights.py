@@ -8,6 +8,12 @@ from src.cli.commands import cmd_weights
 from src.cli.commands.cmd_weights import command_weights
 from src.cli.parsers import create_parser
 
+
+@pytest.fixture(autouse=True)
+def _portuguese(monkeypatch):
+    monkeypatch.setenv("MSGRAM_LANG", "pt_BR")
+
+
 # Respostas do protótipo 1 (grupos 1 a 3) + modifiability toda "igualmente".
 G1 = ["3", "1", "1", "1", "1"]
 G2 = ["2", "2"]

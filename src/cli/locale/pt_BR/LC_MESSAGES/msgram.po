@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-26 02:41-0300\n"
+"POT-Creation-Date: 2026-11-26 02:46-0300\n"
 "PO-Revision-Date: 2026-11-22 03:37-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: pt_BR\n"
@@ -232,7 +232,7 @@ msgstr "Erro ao calcular {path}: {error}\n"
 
 #: src/cli/commands/cmd_calculate.py:114 src/cli/commands/cmd_demo.py:84
 #: src/cli/commands/cmd_diff.py:121 src/cli/commands/cmd_extract.py:162
-#: src/cli/commands/cmd_init.py:31 src/cli/commands/cmd_list.py:117
+#: src/cli/commands/cmd_init.py:31 src/cli/commands/cmd_list.py:121
 #: src/cli/commands/cmd_norm_diff.py:66
 #, python-brace-format
 msgid "KeyError: args[{error}] - non-existent parameters"
@@ -515,37 +515,83 @@ msgstr ""
 "> Execute msgram extract -o <fonte de informação> -dp data_path -ep extract_path,\n"
 "  para extrair as métricas suportadas!"
 
-#: src/cli/commands/cmd_list.py:106
-msgid "Será usado arquivo informado pelo usuário: "
-msgstr ""
+#: src/cli/commands/cmd_list.py:47
+msgid "Characteristic:"
+msgstr "Característica:"
 
-#: src/cli/commands/cmd_list.py:111
-msgid "Não foi informado caminho do arquivo de configuração, será usado caminho padrão."
-msgstr ""
+#: src/cli/commands/cmd_list.py:52 src/cli/commands/cmd_list.py:69
+msgid "Weight:"
+msgstr "Peso:"
 
-#: src/cli/commands/cmd_list.py:121
+#: src/cli/commands/cmd_list.py:56
+msgid "Sub-characteristic(s):"
+msgstr "Sub-característica(s):"
+
+#: src/cli/commands/cmd_list.py:63
+msgid "Measure(s):"
+msgstr "Medida(s):"
+
+#: src/cli/commands/cmd_list.py:75
+msgid "Metric(s):"
+msgstr "Métrica(s):"
+
+#: src/cli/commands/cmd_list.py:84
+#, python-brace-format
+msgid "Min = {min} and Max = {max}"
+msgstr "Min = {min} e Max = {max}"
+
+#: src/cli/commands/cmd_list.py:90
+#, python-brace-format
+msgid "Reference values: {range}"
+msgstr "Valores de referência: {range}"
+
+#: src/cli/commands/cmd_list.py:93
+msgid "End-Metric(s)"
+msgstr "Fim-Métrica(s)"
+
+#: src/cli/commands/cmd_list.py:95
+msgid "End-Measure(s)"
+msgstr "Fim-Medida(s)"
+
+#: src/cli/commands/cmd_list.py:96
+msgid "End-SubCharacteristic"
+msgstr "Fim-SubCaracterística"
+
+#: src/cli/commands/cmd_list.py:97
+msgid "End-Characteristic"
+msgstr "Fim-Característica"
+
+#: src/cli/commands/cmd_list.py:110
+msgid "The user-provided file will be used: "
+msgstr "Será usado arquivo informado pelo usuário: "
+
+#: src/cli/commands/cmd_list.py:115
+msgid "No configuration file path was given, the default path will be used."
+msgstr "Não foi informado caminho do arquivo de configuração, será usado caminho padrão."
+
+#: src/cli/commands/cmd_list.py:125
 msgid "Listing Configuration Parameters"
 msgstr "Listando parâmetros de configuração"
 
-#: src/cli/commands/cmd_list.py:124
-msgid "O arquivo de configuração não foi encontrado. \n"
-msgstr ""
+#: src/cli/commands/cmd_list.py:128
+msgid "The configuration file was not found. \n"
+msgstr "O arquivo de configuração não foi encontrado. \n"
 
-#: src/cli/commands/cmd_list.py:126
-msgid "Execute o comando 'msgram init' no projeto desejado para criá-lo.\n"
-msgstr ""
+#: src/cli/commands/cmd_list.py:129
+msgid "Run 'msgram init' in the desired project to create it.\n"
+msgstr "Execute o comando 'msgram init' no projeto desejado para criá-lo.\n"
 
-#: src/cli/commands/cmd_list.py:130
-msgid "Ou use 'msgram init --config_path <path>' para informar o caminho ate o arquivo."
-msgstr ""
+#: src/cli/commands/cmd_list.py:131
+msgid "Or use 'msgram init --config_path <path>' to give the path to the file."
+msgstr "Ou use 'msgram init --config_path <path>' para informar o caminho até o arquivo."
 
 #: src/cli/commands/cmd_list.py:148
-msgid "Para definir os pesos por comparação, use: msgram weights"
-msgstr ""
+msgid "To set the weights by pairwise comparison, use: msgram weights"
+msgstr "Para definir os pesos por comparação, use: msgram weights"
 
-#: src/cli/commands/cmd_list.py:150
-msgid "Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`"
-msgstr ""
+#: src/cli/commands/cmd_list.py:149
+msgid "To set the weights manually, use: `vim .msgram/msgram.json`"
+msgstr "Para definir os pesos de forma manual, use: `vim .msgram/msgram.json`"
 
 #: src/cli/commands/cmd_norm_diff.py:24
 #, python-brace-format
@@ -574,40 +620,188 @@ msgstr "Norm Diff: {value}"
 msgid "Error extracting values: {error}\n"
 msgstr "Erro ao extrair valores: {error}\n"
 
+#: src/cli/commands/cmd_weights.py:37
+msgid "[1] moderately  [2] strongly  [3] very strongly  [4] extremely"
+msgstr "[1] moderadamente  [2] fortemente  [3] muito fortemente  [4] extremamente"
+
+#: src/cli/commands/cmd_weights.py:42
+msgid "moderately more important"
+msgstr "moderadamente mais importante"
+
+#: src/cli/commands/cmd_weights.py:43
+msgid "strongly more important"
+msgstr "fortemente mais importante"
+
+#: src/cli/commands/cmd_weights.py:44
+msgid "very strongly more important"
+msgstr "muito fortemente mais importante"
+
+#: src/cli/commands/cmd_weights.py:45
+msgid "extremely more important"
+msgstr "extremamente mais importante"
+
+#: src/cli/commands/cmd_weights.py:56
+msgid "Choose one of the options shown"
+msgstr "Escolha uma das opções mostradas"
+
+#: src/cli/commands/cmd_weights.py:80
+#, python-brace-format
+msgid "  Which is more important? [1] {a}  [2] {b}  [3] equally"
+msgstr "  Qual é mais importante? [1] {a}  [2] {b}  [3] igualmente"
+
+#: src/cli/commands/cmd_weights.py:87
+#, python-brace-format
+msgid "  How much more important? {options}"
+msgstr "  Quanto mais importante? {options}"
+
+#: src/cli/commands/cmd_weights.py:103
+#, python-brace-format
+msgid "{a} × {b}: equally important"
+msgstr "{a} × {b}: igualmente importantes"
+
+#: src/cli/commands/cmd_weights.py:104
+#, python-brace-format
+msgid "{a} × {b}: {preferred} is {phrase}"
+msgstr "{a} × {b}: {preferred} é {phrase}"
+
+#: src/cli/commands/cmd_weights.py:112
+msgid "equally important"
+msgstr "igualmente importantes"
+
+#: src/cli/commands/cmd_weights.py:113
+#, python-brace-format
+msgid "{preferred} is {phrase}"
+msgstr "{preferred} é {phrase}"
+
+#: src/cli/commands/cmd_weights.py:120
+msgid "CR does not apply"
+msgstr "CR não se aplica"
+
+#: src/cli/commands/cmd_weights.py:124
+#, python-brace-format
+msgid "⚠ CR {value}, above {limit}, accepted"
+msgstr "⚠ CR {value}, acima de {limit}, aceito"
+
+#: src/cli/commands/cmd_weights.py:140
+#, python-brace-format
+msgid "[{title}] {label} ({n} comparison)"
+msgid_plural "[{title}] {label} ({n} comparisons)"
+msgstr[0] "[{title}] {label} ({n} comparação)"
+msgstr[1] "[{title}] {label} ({n} comparações)"
+
+#: src/cli/commands/cmd_weights.py:155
+#, python-brace-format
+msgid "  Consistency: does not apply ({n} entities)"
+msgstr "  Consistência: não se aplica ({n} entidades)"
+
 #: src/cli/commands/cmd_weights.py:163
-msgid "Resumo"
-msgstr ""
-
-#: src/cli/commands/cmd_weights.py:175
-msgid "Os demais grupos não foram alterados."
-msgstr ""
-
-#: src/cli/commands/cmd_weights.py:208
 #, python-brace-format
-msgid "Nenhum arquivo de configuração encontrado em {path}"
-msgstr ""
+msgid "  ✔ Consistency: CR = {value}"
+msgstr "  ✔ Consistência: CR = {value}"
 
-#: src/cli/commands/cmd_weights.py:212
-msgid "  Execute o comando msgram init"
-msgstr ""
-
-#: src/cli/commands/cmd_weights.py:218
+#: src/cli/commands/cmd_weights.py:171
 #, python-brace-format
-msgid "O arquivo {path} não é um JSON válido: {error}"
-msgstr ""
+msgid "  ⚠ Consistency: CR = {value} (above {limit})"
+msgstr "  ⚠ Consistência: CR = {value} (acima de {limit})"
 
-#: src/cli/commands/cmd_weights.py:233
+#: src/cli/commands/cmd_weights.py:177
+msgid "    Your answers contradict each other."
+msgstr "    Suas respostas se contradizem."
+
+#: src/cli/commands/cmd_weights.py:182
 #, python-brace-format
-msgid "Grupo inexistente: {path}"
-msgstr ""
+msgid "    Most likely conflict: {a} × {b}. Suggestion: {suggestion}"
+msgstr "    Conflito mais provável: {a} × {b}. Sugestão: {suggestion}"
 
-#: src/cli/commands/cmd_weights.py:234
-msgid "  Caminhos válidos:"
-msgstr ""
+#: src/cli/commands/cmd_weights.py:191
+msgid "    [1] redo the group  [2] accept anyway"
+msgstr "    [1] refazer o grupo  [2] aceitar mesmo assim"
 
-#: src/cli/commands/cmd_weights.py:284
-msgid "Nenhum peso a alterar."
-msgstr ""
+#: src/cli/commands/cmd_weights.py:199
+msgid "Summary"
+msgstr "Resumo"
+
+#: src/cli/commands/cmd_weights.py:204
+msgid "before → after"
+msgstr "antes → depois"
+
+#: src/cli/commands/cmd_weights.py:211
+msgid "The other groups were not changed."
+msgstr "Os demais grupos não foram alterados."
+
+#: src/cli/commands/cmd_weights.py:243
+#, python-brace-format
+msgid "No configuration file found at {path}"
+msgstr "Nenhum arquivo de configuração encontrado em {path}"
+
+#: src/cli/commands/cmd_weights.py:244
+msgid "  Run the msgram init command"
+msgstr "  Execute o comando msgram init"
+
+#: src/cli/commands/cmd_weights.py:250
+#, python-brace-format
+msgid "The file {path} is not valid JSON: {error}"
+msgstr "O arquivo {path} não é um JSON válido: {error}"
+
+#: src/cli/commands/cmd_weights.py:265 src/cli/resources/weight_groups.py:29
+#, python-brace-format
+msgid "Group does not exist: {path}"
+msgstr "Grupo inexistente: {path}"
+
+#: src/cli/commands/cmd_weights.py:266
+msgid "  Valid paths:"
+msgstr "  Caminhos válidos:"
+
+#: src/cli/commands/cmd_weights.py:276
+msgid "Weight definition by pairwise comparison"
+msgstr "Definição de pesos por comparação"
+
+#: src/cli/commands/cmd_weights.py:279
+#, python-brace-format
+msgid "{groups} groups in the model · {total} comparisons · {singles} groups with a single entity (weight 100, no questions)"
+msgstr "{groups} grupos no modelo · {total} comparações · {singles} grupos com uma entidade (peso 100, sem perguntas)"
+
+#: src/cli/commands/cmd_weights.py:287
+msgid "y"
+msgstr "s"
+
+#: src/cli/commands/cmd_weights.py:290
+#, python-brace-format
+msgid "Save the new weights to {path}? [y/N]"
+msgstr "Gravar os novos pesos em {path}? [s/N]"
+
+#: src/cli/commands/cmd_weights.py:316
+#, python-brace-format
+msgid "Cancelled. {path} was not changed."
+msgstr "Cancelado. {path} não foi alterado."
+
+#: src/cli/commands/cmd_weights.py:323
+msgid "No weights to change."
+msgstr "Nenhum peso a alterar."
+
+#: src/cli/commands/cmd_weights.py:330
+#, python-brace-format
+msgid "Weights not saved. {path} was not changed."
+msgstr "Pesos não gravados. {path} não foi alterado."
+
+#: src/cli/commands/cmd_weights.py:338
+#, python-brace-format
+msgid "✔ Weights saved to {path}."
+msgstr "✔ Pesos gravados em {path}."
+
+#: src/cli/commands/cmd_weights.py:352
+#, python-brace-format
+msgid "{label}: one entity, weight 100 with no questions"
+msgstr "{label}: uma entidade, peso 100 sem perguntas"
+
+#: src/cli/commands/cmd_weights.py:360
+msgid "Group"
+msgstr "Grupo"
+
+#: src/cli/commands/cmd_weights.py:362
+#, python-brace-format
+msgid "Group {position}/{total}"
+msgstr "Grupo {position}/{total}"
 
 #: src/cli/jsonReader/jsonReader.py:42
 #, python-brace-format
@@ -628,4 +822,21 @@ msgstr "Não foi possível calcular a medida '{measure}'. Métricas ausentes: {m
 #, python-brace-format
 msgid "Error parsing csv files: {error}\n"
 msgstr "Erro ao analisar arquivos csv: {error}\n"
+
+#: src/cli/resources/weight_groups.py:19
+msgid "Characteristics"
+msgstr "Características"
+
+#: src/cli/resources/weight_groups.py:20
+msgid "subcharacteristics"
+msgstr "subcaracterísticas"
+
+#: src/cli/resources/weight_groups.py:21
+msgid "measures"
+msgstr "medidas"
+
+#: src/cli/resources/weight_groups.py:94
+#, python-brace-format
+msgid "Entities outside the group {path}: {entities}"
+msgstr "Entidades fora do grupo {path}: {entities}"
 
