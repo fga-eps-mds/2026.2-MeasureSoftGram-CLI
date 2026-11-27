@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-26 11:45-0300\n"
+"POT-Creation-Date: 2026-11-27 13:58-0300\n"
 "PO-Revision-Date: 2026-11-22 03:37-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: pt_BR\n"
@@ -234,7 +234,7 @@ msgstr "Calculando métricas: "
 msgid "Error calculating {path}: {error}\n"
 msgstr "Erro ao calcular {path}: {error}\n"
 
-#: src/cli/commands/cmd_calculate.py:156 src/cli/commands/cmd_demo.py:64
+#: src/cli/commands/cmd_calculate.py:156 src/cli/commands/cmd_demo.py:65
 #: src/cli/commands/cmd_diff.py:121 src/cli/commands/cmd_extract.py:173
 #: src/cli/commands/cmd_init.py:31 src/cli/commands/cmd_list.py:145
 #: src/cli/commands/cmd_norm_diff.py:66
@@ -325,26 +325,26 @@ msgstr "Sucesso: {filename} exportado como JSON"
 msgid "Success: {filename} exported as CSV"
 msgstr "Sucesso: {filename} exportado como CSV"
 
-#: src/cli/commands/cmd_demo.py:77
+#: src/cli/commands/cmd_demo.py:78
 msgid "Running an end-to-end pipeline on a sample dataset:"
 msgstr "Executando um pipeline completo em um conjunto de dados de exemplo:"
 
-#: src/cli/commands/cmd_demo.py:78
+#: src/cli/commands/cmd_demo.py:79
 #, python-brace-format
 msgid "> Working directory: {path}"
 msgstr "> Diretório de trabalho: {path}"
 
-#: src/cli/commands/cmd_demo.py:79
+#: src/cli/commands/cmd_demo.py:80
 #, python-brace-format
 msgid "> Sample dataset:    {path}"
 msgstr "> Conjunto de dados:     {path}"
 
-#: src/cli/commands/cmd_demo.py:88
+#: src/cli/commands/cmd_demo.py:89
 #, python-brace-format
 msgid "> Using existing config file: {path}"
 msgstr "> Usando arquivo de configuração existente: {path}"
 
-#: src/cli/commands/cmd_demo.py:115
+#: src/cli/commands/cmd_demo.py:116
 msgid ""
 "\n"
 "Demo finished successfully!"
@@ -352,11 +352,11 @@ msgstr ""
 "\n"
 "Demonstração concluída com sucesso!"
 
-#: src/cli/commands/cmd_demo.py:117
+#: src/cli/commands/cmd_demo.py:118
 msgid "Demo done"
 msgstr "Demonstração concluída"
 
-#: src/cli/commands/cmd_demo.py:119
+#: src/cli/commands/cmd_demo.py:120
 #, python-brace-format
 msgid ""
 "> The end-to-end pipeline (init -> extract -> calculate) ran on the embedded sample dataset.\n"
