@@ -1,0 +1,31 @@
+name: Abrir PR das traduções do Weblate
+
+on:
+  push:
+    branches: [weblate/translations]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr:
+    name: PR weblate/translations para develop
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Abrir o PR se ainda não houver um aberto
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          aberto=$(gh pr list --head weblate/translations --base develop --state open --json number -q '.[].number' | head -1)
+          if [ -n "$aberto" ]; then
+            echo "O push atualizou o PR #$aberto, que já estava aberto."
+            exit 0
+          fi
+          gh pr create --head weblate/translations --base develop \
+            --title "chore(i18n): traduções do Weblate" \
+            --body "Traduções feitas no Weblate do projeto (um commit por idioma). O Weblate atualiza este PR a cada novo push em \`weblate/translations\`.
+
+          Os testes rodam no push da branch, pelo \`test.yml\`, e aparecem neste PR."

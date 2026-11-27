@@ -17,6 +17,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   template:
@@ -48,9 +49,9 @@ jobs:
         run: make i18n-compile
 
       - name: Abrir ou atualizar o PR do template
+        id: pr
         uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         with:
-          token: ${{ secrets.WEBLATE_GITHUB_TOKEN || github.token }}
           branch: i18n/template
           base: develop
           add-paths: |
@@ -63,3 +64,9 @@ jobs:
 
             Depois do merge, o Weblate passa a mostrar os textos novos para tradução.
           delete-branch: true
+
+      - name: Rodar os testes no PR do template
+        if: steps.pr.outputs.pull-request-operation == 'created' || steps.pr.outputs.pull-request-operation == 'updated'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run test.yml --ref i18n/template -R ${{ github.repository }}
