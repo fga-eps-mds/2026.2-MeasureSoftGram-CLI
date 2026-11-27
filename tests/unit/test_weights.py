@@ -1,4 +1,5 @@
 import copy
+import io
 import json
 
 import pytest
@@ -7,6 +8,7 @@ from staticfiles import DEFAULT_PRE_CONFIG
 from src.cli.commands import cmd_weights
 from src.cli.commands.cmd_weights import command_weights
 from src.cli.parsers import create_parser
+from src.cli.resources.weight_groups import list_groups
 
 # Respostas do protótipo 1 (grupos 1 a 3) + modifiability toda "igualmente".
 G1 = ["3", "1", "1", "1", "1"]
@@ -264,3 +266,61 @@ def test_aviso_nao_aponta_conflito_no_caso_circular(project, monkeypatch, capsys
     out = capsys.readouterr().out
     assert "CR = 4,95 (acima de 0,10)" in out
     assert "Conflito mais provável" not in out
+
+
+# ---------------------------------------------------------------- Enter vazio
+# Estes testes usam o PromptPT de verdade (sem monkeypatch de ask_choice):
+# o teclado é simulado trocando o sys.stdin por um texto.
+
+AVISO_OPCAO_INVALIDA = "Escolha uma das opções mostradas"
+
+
+def digitar(monkeypatch, *linhas):
+    """Simula o teclado: cada item é uma linha digitada; "" é só o Enter."""
+    texto = "".join(f"{linha}\n" for linha in linhas)
+    monkeypatch.setattr("sys.stdin", io.StringIO(texto))
+
+
+def test_ask_choice_enter_vazio_pergunta_de_novo(monkeypatch, capsys):
+    digitar(monkeypatch, "", "2")
+
+    escolha = cmd_weights.ask_choice("Qual?", ["1", "2", "3"])
+
+    assert escolha == "2"
+    assert capsys.readouterr().out.count(AVISO_OPCAO_INVALIDA) == 1
+
+
+def test_ask_pair_enter_vazio_nao_registra_b(monkeypatch):
+    digitar(monkeypatch, "", "1", "2")
+
+    resposta = cmd_weights.ask_pair("reliability", "maintainability")
+
+    assert resposta == ("reliability", "maintainability", "reliability", "fortemente")
+
+
+def test_ask_pair_enter_vazio_na_intensidade_nao_quebra(monkeypatch):
+    digitar(monkeypatch, "1", "", "2")
+
+    resposta = cmd_weights.ask_pair("reliability", "maintainability")
+
+    assert resposta == ("reliability", "maintainability", "reliability", "fortemente")
+
+
+def test_conflito_enter_vazio_pergunta_de_novo(monkeypatch, capsys):
+    grupo = next(
+        g
+        for g in list_groups(copy.deepcopy(DEFAULT_PRE_CONFIG))
+        if "passed_tests" in g.entities
+    )
+    digitar(monkeypatch, *G3_CIRCULAR, "", "2")
+
+    _, resultado = cmd_weights.ask_group(grupo, "Grupo 3/4")
+
+    assert not resultado.consistent
+    assert AVISO_OPCAO_INVALIDA in capsys.readouterr().out
+
+
+def test_confirmacao_enter_vazio_nao_grava(monkeypatch):
+    digitar(monkeypatch, "")
+
+    assert cmd_weights.confirm_save(".msgram/msgram.json") is False

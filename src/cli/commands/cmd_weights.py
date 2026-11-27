@@ -47,8 +47,11 @@ class PromptPT(Prompt):
 # ------------------------------------------------------------------ entrada
 
 
-def ask_choice(prompt: str, choices, default=None) -> str:
-    """Pergunta no terminal e devolve uma das opções. Isolada para os testes."""
+def ask_choice(prompt: str, choices, default=...) -> str:
+    """Pergunta no terminal e devolve uma das opções. Isolada para os testes.
+
+    Sem default (o ... do rich), o Enter vazio é recusado e a pergunta se repete.
+    """
     try:
         return PromptPT.ask(
             Text(prompt),
