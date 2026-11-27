@@ -90,7 +90,11 @@ Para ver o efeito de uma configuração diferente, edite `./msgram-demo/msgram.j
 | `make format` | Formata o código com `black` |
 | `make build` | Gera os artefatos de distribuição (sdist + wheel) |
 | `make clean` | Remove artefatos de build e caches |
+| `make i18n-extract` | Atualiza o `msgram.pot` e os `.po` com as mensagens do código (Python 3.12+, para pegar o `_()` dentro de f-string) |
+| `make i18n-compile` | Compila os `.po` em `.mo` |
 | `make help` | Lista os alvos disponíveis |
+
+As traduções são feitas no Weblate da [Platform](https://github.com/fga-eps-mds/MeasureSoftGram-Platform#traduções-weblate). A cada push no `develop`, o workflow `i18n.yml` roda o `make i18n-extract` e abre (ou atualiza) o PR `i18n/template` quando há mensagem nova; o Weblate devolve as traduções pelo PR `weblate/translations`.
 
 > 📖 **Flags, valores padrão e o fluxo típico de uso de cada subcomando estão na [Referência da CLI](https://fga-eps-mds.github.io/MeasureSoftGram-Docs/docs/referencia-cli/).**
 

@@ -21,8 +21,8 @@ clean:  ## Remove artefatos de build e caches
 	find . -type d -name __pycache__ -exec rm -rf {} +
 
 i18n-extract:  ## Extrai strings traduziveis para .pot e atualiza os .po
-	pybabel extract -F babel.cfg -o src/cli/locale/msgram.pot src/cli
-	pybabel update -D msgram -i src/cli/locale/msgram.pot -d src/cli/locale -l pt_BR
+	pybabel extract --no-wrap -F babel.cfg -o src/cli/locale/msgram.pot src/cli
+	pybabel update --no-wrap --previous -D msgram -i src/cli/locale/msgram.pot -d src/cli/locale
 
 i18n-compile:  ## Compila os catalogos .po em .mo
 	pybabel compile -D msgram -d src/cli/locale
